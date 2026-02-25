@@ -29,15 +29,12 @@ export function KeyboardManager() {
         searchInput?.focus();
       }
 
-      if (e.key === 'g' || e.key === 'Escape') {
-        if (pathname !== '/') {
-          e.preventDefault();
-          router.push('/');
-        }
-      }
-
-      // Home page specific (Arrow keys, Enter)
+      // Home page specific (map selection / list, Arrow keys, Enter)
       if (pathname === '/') {
+        if (e.key === 'g') {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('app:goto-map-selection'));
+        }
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           window.dispatchEvent(new CustomEvent('app:next-lineup'));
@@ -52,9 +49,9 @@ export function KeyboardManager() {
         }
       }
 
-      // Detail page specific (p, Delete)
+      // Detail page specific (p, g, Escape, Delete)
       if (pathname.startsWith('/lineups/')) {
-        if (e.key === 'p') {
+        if (e.key === 'p' || e.key === 'Escape' || e.key === 'g') {
           e.preventDefault();
           router.back();
         }

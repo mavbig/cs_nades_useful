@@ -4,26 +4,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 222 28% 5%;
+    --foreground: 210 20% 98%;
+    --card: 222 22% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 222 22% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 222 28% 5%;
+    --secondary: 220 18% 14%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 220 18% 14%;
+    --muted-foreground: 215 14% 58%;
+    --accent: 220 18% 14%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 42%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --radius: 0.5rem;
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 215 20% 65%;
+    --radius: 0.625rem;
+    --radius-lg: 0.75rem;
+    --surface: 222 20% 7%;
   }
 }
 
@@ -34,6 +36,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -45,9 +49,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: hsl(var(--border));
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #333;
+  background: hsl(var(--muted-foreground) / 0.4);
 }

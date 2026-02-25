@@ -6,16 +6,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
+function normalizeMapName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, '');
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const map = searchParams.get('map');
+  const mapParam = searchParams.get('map');
   const utility = searchParams.get('utility');
   const query = searchParams.get('q');
 
-  const lineups = await prisma.lineup.findMany({
+  let lineups = await prisma.lineup.findMany({
     where: {
       AND: [
-        map ? { map } : {},
         utility ? { utility } : {},
         query ? {
           OR: [
@@ -28,6 +31,11 @@ export async function GET(req: NextRequest) {
     },
     orderBy: { createdAt: 'desc' }
   });
+
+  if (mapParam) {
+    const normalized = normalizeMapName(mapParam);
+    lineups = lineups.filter((l) => normalizeMapName(l.map) === normalized);
+  }
 
   return NextResponse.json(lineups);
 }
@@ -56,6 +64,8 @@ export async function POST(req: NextRequest) {
     await writeFile(path.join(DATA_DIR, screenshotRelPath), Buffer.from(await screenshot.arrayBuffer()));
     await writeFile(path.join(DATA_DIR, clipRelPath), Buffer.from(await clip.arrayBuffer()));
 
+    const tickrate = (formData.get('tickrate') as string | null) || 'ANY';
+
     const lineup = await prisma.lineup.create({
       data: {
         id,
@@ -68,7 +78,7 @@ export async function POST(req: NextRequest) {
         startSpot: formData.get('startSpot') as string,
         aimSpot: formData.get('aimSpot') as string,
         throwType: formData.get('throwType') as string,
-        tickrate: formData.get('tickrate') as string,
+        tickrate,
         screenshotPath: screenshotRelPath,
         clipPath: clipRelPath,
       }

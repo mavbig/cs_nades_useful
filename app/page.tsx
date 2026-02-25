@@ -35,23 +35,23 @@ export default function HomePage() {
   }, [search, lineups]);
 
   useEffect(() => {
-    const handleKeys = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex(prev => Math.min(prev + 1, filtered.length - 1));
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(prev => Math.max(prev - 1, 0));
-      }
-      if (e.key === 'Enter' && filtered[selectedIndex]) {
+    const handleNext = () => setSelectedIndex(prev => Math.min(prev + 1, filtered.length - 1));
+    const handlePrev = () => setSelectedIndex(prev => Math.max(prev - 1, 0));
+    const handleSelect = () => {
+      if (filtered[selectedIndex]) {
         router.push(`/lineups/${filtered[selectedIndex].id}`);
       }
     };
-    window.addEventListener('keydown', handleKeys);
-    return () => window.removeEventListener('keydown', handleKeys);
+
+    window.addEventListener('app:next-lineup', handleNext);
+    window.addEventListener('app:prev-lineup', handlePrev);
+    window.addEventListener('app:select-lineup', handleSelect);
+
+    return () => {
+      window.removeEventListener('app:next-lineup', handleNext);
+      window.removeEventListener('app:prev-lineup', handlePrev);
+      window.removeEventListener('app:select-lineup', handleSelect);
+    };
   }, [filtered, selectedIndex, router]);
 
   useEffect(() => {
@@ -64,6 +64,7 @@ export default function HomePage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
+            id="search-input"
             ref={searchRef}
             placeholder="Search nades... (/)"
             value={search}

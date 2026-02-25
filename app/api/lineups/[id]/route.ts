@@ -7,10 +7,11 @@ const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const lineup = await prisma.lineup.findUnique({
-    where: { id: params.id }
+    where: { id }
   });
   if (!lineup) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(lineup);
@@ -18,14 +19,15 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const lineup = await prisma.lineup.findUnique({ where: { id: params.id } });
+    const { id } = await params;
+    const lineup = await prisma.lineup.findUnique({ where: { id } });
     if (lineup) {
-      const mediaDir = path.join(DATA_DIR, 'media', params.id);
+      const mediaDir = path.join(DATA_DIR, 'media', id);
       await rm(mediaDir, { recursive: true, force: true });
-      await prisma.lineup.delete({ where: { id: params.id } });
+      await prisma.lineup.delete({ where: { id } });
     }
     return NextResponse.json({ success: true });
   } catch (error) {

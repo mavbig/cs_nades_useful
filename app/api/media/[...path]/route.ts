@@ -7,9 +7,10 @@ const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const filePath = path.join(DATA_DIR, ...params.path);
+  const { path: pathSegments } = await params;
+  const filePath = path.join(DATA_DIR, ...pathSegments);
 
   if (!existsSync(filePath)) {
     return new NextResponse('Not Found', { status: 404 });

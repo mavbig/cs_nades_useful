@@ -23,13 +23,9 @@ export default function DetailPage() {
   }, [id]);
 
   useEffect(() => {
-    const handleKeys = (e: KeyboardEvent) => {
-      if (e.key === 'p') router.back();
-      if (e.key === 'Delete') handleDelete();
-    };
-    window.addEventListener('keydown', handleKeys);
-    return () => window.removeEventListener('keydown', handleKeys);
-  }, []);
+    window.addEventListener('app:delete-lineup', handleDelete);
+    return () => window.removeEventListener('app:delete-lineup', handleDelete);
+  }, [lineup]);
 
   const handleDelete = async () => {
     if (!confirm('Delete this lineup?')) return;

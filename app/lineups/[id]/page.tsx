@@ -133,9 +133,20 @@ export default function DetailPage() {
                 alt="Aim spot"
                 className="w-full h-full object-contain"
               />
-              <span className="absolute top-3 left-3 rounded-md bg-black/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-sm">
+              <span className="absolute top-3 left-3 rounded-md bg-black/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-sm z-10">
                 Screenshot (aim) — S to switch to video
               </span>
+
+              {/* Zoom Magnifier Overlay */}
+              <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 w-96 h-96 md:w-[600px] md:h-[600px] rounded-full border-2 border-white/20 shadow-2xl overflow-hidden bg-black pointer-events-none z-10 ring-4 ring-black/40">
+                <div 
+                  className="w-full h-full bg-no-repeat bg-center"
+                  style={{
+                    backgroundImage: `url(/api/media/${lineup.screenshotPath})`,
+                    backgroundSize: '500%',
+                  }}
+                />
+              </div>
             </div>
           ) : (
             <div className="flex-1 relative w-full flex flex-col min-h-0">

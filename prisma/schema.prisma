@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lineup {
+  id             String    @id @default(uuid())
+  map            String
+  side           String    // "T", "CT", "ANY"
+  utility        String    // "SMOKE", "FLASH", "MOLLY", "HE", "DECOY"
+  title          String
+  description    String?
+  tags           String    // Comma-separated
+  startSpot      String
+  aimSpot        String
+  throwType      String    // "STAND", "JUMP", "RUN", "WALK", "JUMPTHROW"
+  tickrate       String    // "TR64", "TR128", "ANY"
+  screenshotPath String
+  clipPath       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([map])
+}

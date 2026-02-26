@@ -21,7 +21,6 @@ export function LineupForm({ onClose, initialMap }: { onClose: () => void; initi
     side: 'ANY',
     utility: 'SMOKE',
     startSpot: '',
-    aimSpot: '',
     throwType: 'STAND',
     tags: '',
     description: '',
@@ -127,25 +126,14 @@ export function LineupForm({ onClose, initialMap }: { onClose: () => void; initi
 
             <section className="space-y-3">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Spots</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label>Start spot</Label>
-                  <Input
-                    required
-                    value={formData.startSpot}
-                    onChange={(e) => setFormData({ ...formData, startSpot: e.target.value })}
-                    placeholder="e.g. T-Spawn"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Aim spot</Label>
-                  <Input
-                    required
-                    value={formData.aimSpot}
-                    onChange={(e) => setFormData({ ...formData, aimSpot: e.target.value })}
-                    placeholder="e.g. Top of chimney"
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <Label>Start spot</Label>
+                <Input
+                  required
+                  value={formData.startSpot}
+                  onChange={(e) => setFormData({ ...formData, startSpot: e.target.value })}
+                  placeholder="e.g. T-Spawn"
+                />
               </div>
             </section>
 

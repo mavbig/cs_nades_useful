@@ -118,7 +118,6 @@ export default function DetailPage() {
         <div className="shrink-0 border-b border-border bg-card/95 backdrop-blur-sm px-4 py-2.5">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
             <InfoChip icon={<MapPin className="w-3.5 h-3.5" />} label="Start" value={lineup.startSpot} />
-            <InfoChip icon={<Target className="w-3.5 h-3.5" />} label="Aim" value={lineup.aimSpot} />
             <InfoChip icon={<MoveUp className="w-3.5 h-3.5" />} label="Throw" value={lineup.throwType} />
             <InfoChip icon={<Zap className="w-3.5 h-3.5" />} label="Utility" value={lineup.utility} />
             <InfoChip icon={<Tag className="w-3.5 h-3.5" />} label="Tags" value={lineup.tags || '—'} />
@@ -130,7 +129,7 @@ export default function DetailPage() {
             <div className="flex-1 relative w-full overflow-hidden">
               <img
                 src={`/api/media/${lineup.screenshotPath}`}
-                alt="Aim spot"
+                alt="Screenshot"
                 className="w-full h-full object-contain"
               />
               <span className="absolute top-3 left-3 rounded-md bg-black/70 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-sm z-10">

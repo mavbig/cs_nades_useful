@@ -76,7 +76,6 @@ export async function POST(req: NextRequest) {
         description: formData.get('description') as string,
         tags: formData.get('tags') as string,
         startSpot: formData.get('startSpot') as string,
-        aimSpot: formData.get('aimSpot') as string,
         throwType: formData.get('throwType') as string,
         tickrate,
         screenshotPath: screenshotRelPath,

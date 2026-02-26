@@ -14,12 +14,13 @@ import {
 } from './ui/select';
 
 import { Lineup } from '@prisma/client';
+import { MAPS } from '@/lib/maps';
 
 export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedLineup?: Lineup) => void; initialMap?: string; lineup?: Lineup }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: lineup?.title ?? '',
-    map: lineup?.map ?? initialMap ?? '',
+    map: lineup?.map ?? initialMap ?? (MAPS[0]?.name ?? ''),
     side: lineup?.side ?? 'ANY',
     utility: lineup?.utility ?? 'SMOKE',
     startSpot: lineup?.startSpot ?? '',
@@ -83,12 +84,21 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                 </div>
                 <div className="space-y-1.5">
                   <Label>Map</Label>
-                  <Input
-                    required
+                  <Select
                     value={formData.map}
-                    onChange={(e) => setFormData({ ...formData, map: e.target.value })}
-                    placeholder="e.g. Mirage"
-                  />
+                    onValueChange={(value) => setFormData({ ...formData, map: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Map" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MAPS.map((m) => (
+                        <SelectItem key={m.slug} value={m.name}>
+                          {m.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </section>

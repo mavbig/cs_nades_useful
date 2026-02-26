@@ -16,7 +16,7 @@ model Lineup {
   description    String?
   tags           String    // Comma-separated
   startSpot      String
-  throwType      String    // "STAND", "JUMP", "RUN", "WALK", "JUMPTHROW"
+  throwType      String    // "STAND", "WALK", "RUN", "JUMPTHROW", "A JUMPTHROW", "D JUMPTHROW", "RUN JUMPTHROW", "WALK JUMPTHROW", "RIGHT CLICK", "LEFT+RIGHT CLICK"
   tickrate       String    // "TR64", "TR128", "ANY"
   screenshotPath String
   clipPath       String

@@ -168,10 +168,15 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="STAND">Stand</SelectItem>
-                    <SelectItem value="JUMP">Jump</SelectItem>
-                    <SelectItem value="JUMPTHROW">Jump throw</SelectItem>
-                    <SelectItem value="RUN">Run</SelectItem>
                     <SelectItem value="WALK">Walk</SelectItem>
+                    <SelectItem value="RUN">Run</SelectItem>
+                    <SelectItem value="JUMPTHROW">Jump throw</SelectItem>
+                    <SelectItem value="A JUMPTHROW">A Jump throw</SelectItem>
+                    <SelectItem value="D JUMPTHROW">D Jump throw</SelectItem>
+                    <SelectItem value="RUN JUMPTHROW">Run Jump throw</SelectItem>
+                    <SelectItem value="WALK JUMPTHROW">Walk Jump throw</SelectItem>
+                    <SelectItem value="RIGHT CLICK">Right click</SelectItem>
+                    <SelectItem value="LEFT+RIGHT CLICK">Left+Right click</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

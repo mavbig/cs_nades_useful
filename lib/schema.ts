@@ -8,7 +8,7 @@ export const LineupSchema = z.object({
   description: z.string().optional(),
   tags: z.string(),
   startSpot: z.string().min(1, "Start spot is required"),
-  throwType: z.enum(["STAND", "JUMP", "RUN", "WALK", "JUMPTHROW"]),
+  throwType: z.enum(["STAND", "WALK", "RUN", "JUMPTHROW", "A JUMPTHROW", "D JUMPTHROW", "RUN JUMPTHROW", "WALK JUMPTHROW", "RIGHT CLICK", "LEFT+RIGHT CLICK"]),
   tickrate: z.enum(["TR64", "TR128", "ANY"]),
 });
 

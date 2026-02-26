@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -31,6 +31,45 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
   });
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [clip, setClip] = useState<File | null>(null);
+
+  const [tagInput, setTagInput] = useState('');
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+  const tagInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch('/api/tags').then(res => res.json()).then(setAvailableTags).catch(console.error);
+  }, []);
+
+  const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(Boolean);
+
+  const addTag = (tag: string) => {
+    const t = tag.trim().toLowerCase();
+    if (t && !tagsArray.includes(t)) {
+      setFormData({ ...formData, tags: [...tagsArray, t].join(', ') });
+    }
+    setTagInput('');
+    setShowTagSuggestions(false);
+    tagInputRef.current?.focus();
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData({ ...formData, tags: tagsArray.filter(t => t !== tagToRemove).join(', ') });
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      addTag(tagInput);
+    } else if (e.key === 'Backspace' && tagInput === '') {
+      e.preventDefault();
+      if (tagsArray.length > 0) {
+        removeTag(tagsArray[tagsArray.length - 1]);
+      }
+    }
+  };
+
+  const filteredTags = availableTags.filter(t => t.includes(tagInput.toLowerCase()) && !tagsArray.includes(t));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,12 +246,57 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
             </section>
 
             <section className="space-y-3">
-              <Label>Tags (comma separated)</Label>
-              <Input
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="entry, fast, standard"
-              />
+              <Label>Tags</Label>
+              <div className="relative">
+                <div
+                  className="flex flex-wrap items-center gap-1.5 min-h-10 w-full rounded-lg border border-input bg-secondary/30 px-2 py-1.5 text-sm transition-all focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background cursor-text"
+                  onClick={() => tagInputRef.current?.focus()}
+                >
+                  {tagsArray.map(tag => (
+                    <span key={tag} className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-md text-xs font-medium">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
+                        className="hover:text-destructive focus:outline-none rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    ref={tagInputRef}
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => {
+                      setTagInput(e.target.value);
+                      setShowTagSuggestions(true);
+                    }}
+                    onKeyDown={handleTagKeyDown}
+                    onFocus={() => setShowTagSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowTagSuggestions(false), 200)}
+                    placeholder={tagsArray.length === 0 ? "e.g. entry, fast (press Space to add)" : ""}
+                    className="flex-1 bg-transparent outline-none min-w-[120px] text-sm placeholder:text-muted-foreground"
+                  />
+                </div>
+                {showTagSuggestions && filteredTags.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-40 overflow-y-auto rounded-md border border-border bg-popover shadow-md z-50 custom-scrollbar">
+                    {filteredTags.map(tag => (
+                      <button
+                        key={tag}
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted focus:bg-muted outline-none"
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevent input blur
+                          addTag(tag);
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </section>
           </div>
 

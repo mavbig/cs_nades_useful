@@ -13,34 +13,42 @@ import {
   SelectValue,
 } from './ui/select';
 
-export function LineupForm({ onClose, initialMap }: { onClose: () => void; initialMap?: string }) {
+import { Lineup } from '@prisma/client';
+
+export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedLineup?: Lineup) => void; initialMap?: string; lineup?: Lineup }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    map: initialMap ?? '',
-    side: 'ANY',
-    utility: 'SMOKE',
-    startSpot: '',
-    throwType: 'STAND',
-    tags: '',
-    description: '',
+    title: lineup?.title ?? '',
+    map: lineup?.map ?? initialMap ?? '',
+    side: lineup?.side ?? 'ANY',
+    utility: lineup?.utility ?? 'SMOKE',
+    startSpot: lineup?.startSpot ?? '',
+    throwType: lineup?.throwType ?? 'STAND',
+    tags: lineup?.tags ?? '',
+    description: lineup?.description ?? '',
+    tickrate: lineup?.tickrate ?? 'ANY',
   });
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [clip, setClip] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!screenshot || !clip) return alert('Please select both media files');
+    if (!lineup && (!screenshot || !clip)) return alert('Please select both media files');
 
     setLoading(true);
     const data = new FormData();
     Object.entries(formData).forEach(([key, val]) => data.append(key, val));
-    data.append('screenshot', screenshot);
-    data.append('clip', clip);
+    if (screenshot) data.append('screenshot', screenshot);
+    if (clip) data.append('clip', clip);
 
     try {
-      const res = await fetch('/api/lineups', { method: 'POST', body: data });
-      if (res.ok) onClose();
+      const url = lineup ? `/api/lineups/${lineup.id}` : '/api/lineups';
+      const method = lineup ? 'PATCH' : 'POST';
+      const res = await fetch(url, { method, body: data });
+      if (res.ok) {
+        const updated = await res.json();
+        onClose(updated);
+      }
       else alert('Error saving lineup');
     } catch {
       alert('Upload failed');
@@ -53,8 +61,8 @@ export function LineupForm({ onClose, initialMap }: { onClose: () => void; initi
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/90 backdrop-blur-md">
       <div className="bg-card w-full max-w-lg border border-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold tracking-tight">Add new lineup</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} className="rounded-lg">
+          <h2 className="text-lg font-semibold tracking-tight">{lineup ? 'Edit lineup' : 'Add new lineup'}</h2>
+          <Button variant="ghost" size="icon" onClick={() => onClose()} className="rounded-lg">
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -160,7 +168,7 @@ export function LineupForm({ onClose, initialMap }: { onClose: () => void; initi
             </section>
 
             <section className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Media</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Media {lineup && '(Optional)'}</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Screenshot (aim)</Label>
@@ -195,7 +203,7 @@ export function LineupForm({ onClose, initialMap }: { onClose: () => void; initi
 
           <div className="shrink-0 px-5 py-4 border-t border-border bg-card">
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? 'Saving…' : 'Save lineup'}
+              {loading ? 'Saving…' : lineup ? 'Update lineup' : 'Save lineup'}
             </Button>
           </div>
         </form>

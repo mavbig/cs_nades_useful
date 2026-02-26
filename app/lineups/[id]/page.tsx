@@ -2,9 +2,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { Lineup } from '@prisma/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Trash2, MapPin, Target, MoveUp, Tag, Zap } from 'lucide-react';
+import { ArrowLeft, Trash2, MapPin, Target, MoveUp, Tag, Zap, Edit2 } from 'lucide-react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { LineupForm } from '@/components/lineup-form';
 
 type MediaView = 'video' | 'screenshot';
 
@@ -12,6 +13,7 @@ export default function DetailPage() {
   const [lineup, setLineup] = useState<Lineup | null>(null);
   const [loading, setLoading] = useState(true);
   const [mediaView, setMediaView] = useState<MediaView>('video');
+  const [showEdit, setShowEdit] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { id } = useParams();
@@ -102,15 +104,26 @@ export default function DetailPage() {
             </div>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0 text-destructive hover:bg-destructive/10 rounded-lg"
-          onClick={handleDelete}
-          aria-label="Delete lineup"
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-muted-foreground hover:text-foreground rounded-lg"
+            onClick={() => setShowEdit(true)}
+            aria-label="Edit lineup"
+          >
+            <Edit2 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-destructive hover:bg-destructive/10 rounded-lg"
+            onClick={handleDelete}
+            aria-label="Delete lineup"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </header>
 
       <div className="flex-1 flex flex-col min-h-0">
@@ -170,6 +183,16 @@ export default function DetailPage() {
           )}
         </div>
       </div>
+
+      {showEdit && (
+        <LineupForm
+          lineup={lineup}
+          onClose={(updated) => {
+            if (updated) setLineup(updated);
+            setShowEdit(false);
+          }}
+        />
+      )}
     </main>
   );
 }

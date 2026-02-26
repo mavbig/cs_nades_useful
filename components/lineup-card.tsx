@@ -32,7 +32,7 @@ export function LineupCard({ lineup, selected }: LineupCardProps) {
         <img
           src={`/api/media/${lineup.screenshotPath}`}
           alt=""
-          className="object-cover w-full h-full"
+          className="object-cover w-full h-full scale-[7] origin-center"
         />
       </div>
       <div className="flex-1 min-w-0">

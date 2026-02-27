@@ -144,8 +144,8 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
 
             <section className="space-y-3">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Type</h3>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-4 gap-3">
+                <div className="space-y-1.5 col-span-1">
                   <Label>Side</Label>
                   <Select
                     value={formData.side}
@@ -161,7 +161,7 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 col-span-1">
                   <Label>Utility</Label>
                   <Select
                     value={formData.utility}
@@ -175,6 +175,29 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                       <SelectItem value="FLASH">Flash</SelectItem>
                       <SelectItem value="MOLLY">Molly</SelectItem>
                       <SelectItem value="HE">HE</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5 col-span-2">
+                  <Label>Throw type</Label>
+                  <Select
+                    value={formData.throwType}
+                    onValueChange={(value) => setFormData({ ...formData, throwType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Throw type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="STAND">Stand</SelectItem>
+                      <SelectItem value="WALK">Walk</SelectItem>
+                      <SelectItem value="RUN">Run</SelectItem>
+                      <SelectItem value="JUMPTHROW">Jump throw</SelectItem>
+                      <SelectItem value="A JUMPTHROW">A Jump throw</SelectItem>
+                      <SelectItem value="D JUMPTHROW">D Jump throw</SelectItem>
+                      <SelectItem value="RUN JUMPTHROW">Run Jump throw</SelectItem>
+                      <SelectItem value="WALK JUMPTHROW">Walk Jump throw</SelectItem>
+                      <SelectItem value="RIGHT CLICK">Right click</SelectItem>
+                      <SelectItem value="LEFT+RIGHT CLICK">Left+Right click</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -195,37 +218,10 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
             </section>
 
             <section className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Throw</h3>
-              <div className="space-y-1.5">
-                <Label>Throw type</Label>
-                <Select
-                  value={formData.throwType}
-                  onValueChange={(value) => setFormData({ ...formData, throwType: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Throw type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="STAND">Stand</SelectItem>
-                    <SelectItem value="WALK">Walk</SelectItem>
-                    <SelectItem value="RUN">Run</SelectItem>
-                    <SelectItem value="JUMPTHROW">Jump throw</SelectItem>
-                    <SelectItem value="A JUMPTHROW">A Jump throw</SelectItem>
-                    <SelectItem value="D JUMPTHROW">D Jump throw</SelectItem>
-                    <SelectItem value="RUN JUMPTHROW">Run Jump throw</SelectItem>
-                    <SelectItem value="WALK JUMPTHROW">Walk Jump throw</SelectItem>
-                    <SelectItem value="RIGHT CLICK">Right click</SelectItem>
-                    <SelectItem value="LEFT+RIGHT CLICK">Left+Right click</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </section>
-
-            <section className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Media {lineup && '(Optional)'}</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Media</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label>Screenshot (aim)</Label>
+                  <Label>Screenshot</Label>
                   <Input
                     type="file"
                     accept="image/*"
@@ -234,7 +230,7 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Clip (video)</Label>
+                  <Label>Clip</Label>
                   <Input
                     type="file"
                     accept="video/*"

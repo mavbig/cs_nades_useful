@@ -30,6 +30,15 @@ export default function DetailPage() {
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      // Don't trigger if typing in an input, textarea, or contenteditable
+      const target = e.target as HTMLElement;
+      const isTyping = 
+        target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.isContentEditable;
+
+      if (isTyping) return;
+
       if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
         setMediaView((v) => (v === 'video' ? 'screenshot' : 'video'));

@@ -80,6 +80,9 @@ function HomePageInner() {
     );
   }, [search, lineups]);
 
+  const tLineups = useMemo(() => filtered.filter(l => l.side === 'T' || l.side === 'ANY'), [filtered]);
+  const ctLineups = useMemo(() => filtered.filter(l => l.side === 'CT' || l.side === 'ANY'), [filtered]);
+
   useEffect(() => {
     const handleNext = () => setSelectedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
     const handlePrev = () => setSelectedIndex((prev) => Math.max(prev - 1, 0));
@@ -123,10 +126,10 @@ function HomePageInner() {
   };
 
   return (
-    <main className="flex flex-col h-screen max-w-[900px] mx-auto bg-background">
+    <main className="flex flex-col h-screen max-w-[1200px] mx-auto bg-background">
       {selectedMap === null ? (
         <>
-          <header className="shrink-0 border-b border-border/80 bg-card/50 backdrop-blur-sm px-4 py-4">
+          <header className="shrink-0 border-b border-border/80 bg-card/50 backdrop-blur-sm px-4 py-4 max-w-[900px] mx-auto w-full">
             <div className="flex items-center justify-between gap-3">
               <h1 className="text-lg font-semibold tracking-tight text-foreground">CS2 Nades</h1>
               <Button size="icon" variant="secondary" onClick={() => setShowAdd(true)} className="shrink-0">
@@ -136,7 +139,7 @@ function HomePageInner() {
             <p className="text-sm text-muted-foreground mt-1">Choose a map</p>
           </header>
 
-          <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar max-w-[900px] mx-auto w-full">
             {mapsLoading ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <div className="h-8 w-8 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin mb-3" />
@@ -240,13 +243,40 @@ function HomePageInner() {
                 <p className="text-muted-foreground/80 text-xs mt-1">Try another map or add one.</p>
               </div>
             ) : (
-              <ul className="space-y-2" role="list">
-                {filtered.map((lineup, i) => (
-                  <li key={lineup.id}>
-                    <LineupCard lineup={lineup} selected={i === selectedIndex} />
-                  </li>
-                ))}
-              </ul>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <section>
+                  <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 mb-3 px-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    T Side
+                  </h2>
+                  <ul className="space-y-2" role="list">
+                    {tLineups.map((lineup) => {
+                      const globalIndex = filtered.findIndex(l => l.id === lineup.id);
+                      return (
+                        <li key={`t-${lineup.id}`}>
+                          <LineupCard lineup={lineup} selected={globalIndex === selectedIndex} />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+                <section>
+                  <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 mb-3 px-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-400" />
+                    CT Side
+                  </h2>
+                  <ul className="space-y-2" role="list">
+                    {ctLineups.map((lineup) => {
+                      const globalIndex = filtered.findIndex(l => l.id === lineup.id);
+                      return (
+                        <li key={`ct-${lineup.id}`}>
+                          <LineupCard lineup={lineup} selected={globalIndex === selectedIndex} />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              </div>
             )}
           </div>
         </>

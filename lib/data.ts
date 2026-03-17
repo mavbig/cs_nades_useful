@@ -1,8 +1,9 @@
 import { Lineup, MapCount } from './types';
 import { normalizeMapName } from './utils';
-import lineupsData from '../public/data/lineups.json';
+import lineupsData from '../data/static-lineups.json';
 
-// We cast the imported JSON to Lineup[]
+// Direct import of JSON data ensures it's bundled at build time.
+// This avoids ENOENT errors on Cloudflare Pages.
 const lineups: Lineup[] = lineupsData as Lineup[];
 
 export async function getAllLineups(): Promise<Lineup[]> {

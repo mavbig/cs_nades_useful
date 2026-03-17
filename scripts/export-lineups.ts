@@ -23,7 +23,12 @@ async function main() {
   const filePath = path.join(publicDataDir, 'lineups.json');
   await fs.writeFile(filePath, JSON.stringify(exportData, null, 2), 'utf-8');
 
-  console.log(`Successfully exported ${lineups.length} lineups to ${filePath}`);
+  // Also export to data/ for direct import in lib/data.ts
+  const internalDataDir = path.join(process.cwd(), 'data');
+  await fs.mkdir(internalDataDir, { recursive: true });
+  await fs.writeFile(path.join(internalDataDir, 'static-lineups.json'), JSON.stringify(exportData, null, 2), 'utf-8');
+
+  console.log(`Successfully exported ${lineups.length} lineups.`);
 }
 
 main()

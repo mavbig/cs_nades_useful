@@ -3,6 +3,7 @@ node_modules
 dist
 out
 /data
+!/data/static-lineups.json
 .env
 .env.local
 .DS_Store

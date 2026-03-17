@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "export-data": "tsx scripts/export-lineups.ts",
+    "sync-media": "wrangler r2 object sync cs-nades-useful/media --local-directory ./data/media",
     "postinstall": "prisma generate"
   },
   "dependencies": {

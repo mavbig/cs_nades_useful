@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --experimental-https --experimental-https-key ./certs/server.key --experimental-https-cert ./certs/server.crt",
     "build": "npm run export-data && next build",
+    "pages:build": "next build",
     "start": "next start",
     "lint": "next lint",
     "export-data": "tsx scripts/export-lineups.ts",

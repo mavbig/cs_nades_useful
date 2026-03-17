@@ -1,0 +1,34 @@
+[
+  {
+    "id": "dd51e408-a13a-4cb0-95c6-a9119e0a8471",
+    "map": "Ancient",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "B - Short Smoke - Deep",
+    "description": "",
+    "tags": "default, combo",
+    "startSpot": "B - Doors Box",
+    "throwType": "JUMPTHROW",
+    "tickrate": "ANY",
+    "screenshotPath": "media/dd51e408-a13a-4cb0-95c6-a9119e0a8471/screenshot.jpg",
+    "clipPath": "media/dd51e408-a13a-4cb0-95c6-a9119e0a8471/clip.mp4",
+    "createdAt": "2026-02-26T22:36:52.003Z",
+    "updatedAt": "2026-02-26T22:57:40.710Z"
+  },
+  {
+    "id": "a98aaef0-ac49-476c-8140-fe1bdc3ede68",
+    "map": "Ancient",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "B - Long Smoke - Close",
+    "description": "",
+    "tags": "slow, combo",
+    "startSpot": "B - Door Box",
+    "throwType": "JUMPTHROW",
+    "tickrate": "ANY",
+    "screenshotPath": "media/a98aaef0-ac49-476c-8140-fe1bdc3ede68/screenshot.png",
+    "clipPath": "media/a98aaef0-ac49-476c-8140-fe1bdc3ede68/clip.mkv",
+    "createdAt": "2026-02-26T22:15:47.268Z",
+    "updatedAt": "2026-02-26T22:58:11.161Z"
+  }
+]

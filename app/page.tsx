@@ -1,20 +1,15 @@
 'use client';
 import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
-import { Lineup } from '@prisma/client';
+import { Lineup, MapCount } from '@/lib/types';
 import { LineupCard } from '@/components/lineup-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, ArrowLeft, Map as MapIcon } from 'lucide-react';
+import { Search, ArrowLeft, Map as MapIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LineupForm } from '@/components/lineup-form';
 import { MAPS } from '@/lib/maps';
-import { cn } from '@/lib/utils';
-
-function normalizeMapName(name: string): string {
-  return name.trim().toLowerCase().replace(/\s+/g, '');
-}
-
-type MapCount = { map: string; count: number };
+import { cn, normalizeMapName } from '@/lib/utils';
+import { getMapCounts, getLineupsByMap } from '@/lib/data';
+import { getMapImageUrl } from '@/lib/media';
 
 function HomePageInner() {
   const searchParams = useSearchParams();
@@ -25,7 +20,6 @@ function HomePageInner() {
   const [lineupsLoading, setLineupsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showAdd, setShowAdd] = useState(false);
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -40,12 +34,10 @@ function HomePageInner() {
   }, [searchParams]);
 
   useEffect(() => {
-    fetch('/api/lineups/maps')
-      .then((res) => res.json())
-      .then((data: MapCount[]) => {
-        setMapCounts(data);
-        setMapsLoading(false);
-      });
+    getMapCounts().then((data) => {
+      setMapCounts(data);
+      setMapsLoading(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -54,12 +46,10 @@ function HomePageInner() {
       return;
     }
     setLineupsLoading(true);
-    fetch(`/api/lineups?map=${encodeURIComponent(selectedMap)}`)
-      .then((res) => res.json())
-      .then((data: Lineup[]) => {
-        setLineups(data);
-        setLineupsLoading(false);
-      });
+    getLineupsByMap(selectedMap).then((data) => {
+      setLineups(data);
+      setLineupsLoading(false);
+    });
   }, [selectedMap]);
 
   const getCountForMap = (mapName: string): number => {
@@ -117,14 +107,6 @@ function HomePageInner() {
     setSelectedIndex(0);
   }, [search]);
 
-  const refreshAfterAdd = () => {
-    setShowAdd(false);
-    fetch('/api/lineups/maps').then((res) => res.json()).then(setMapCounts);
-    if (selectedMap) {
-      fetch(`/api/lineups?map=${encodeURIComponent(selectedMap)}`).then((res) => res.json()).then(setLineups);
-    }
-  };
-
   return (
     <main className="flex flex-col h-screen max-w-[1200px] mx-auto bg-background">
       {selectedMap === null ? (
@@ -132,9 +114,7 @@ function HomePageInner() {
           <header className="shrink-0 border-b border-border/80 bg-card/50 backdrop-blur-sm px-4 py-4 max-w-[900px] mx-auto w-full">
             <div className="flex items-center justify-between gap-3">
               <h1 className="text-lg font-semibold tracking-tight text-foreground">CS2 Nades</h1>
-              <Button size="icon" variant="secondary" onClick={() => setShowAdd(true)} className="shrink-0">
-                <Plus className="w-5 h-5" />
-              </Button>
+              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Static Mode</div>
             </div>
             <p className="text-sm text-muted-foreground mt-1">Choose a map</p>
           </header>
@@ -143,7 +123,7 @@ function HomePageInner() {
             {mapsLoading ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <div className="h-8 w-8 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin mb-3" />
-                <span className="text-sm">Loading maps…</span>
+                <span className="text-sm">Loading maps...</span>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -169,7 +149,7 @@ function HomePageInner() {
                     >
                       <div className="aspect-[4/3] relative bg-muted">
                         <img
-                          src={`/api/map-image/${m.slug}`}
+                          src={getMapImageUrl(m.slug)}
                           alt=""
                           className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                         />
@@ -212,16 +192,13 @@ function HomePageInner() {
                 <MapIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                 <h1 className="text-lg font-semibold tracking-tight truncate">{selectedMap}</h1>
               </div>
-              <Button size="icon" variant="secondary" onClick={() => setShowAdd(true)} className="shrink-0 ml-auto">
-                <Plus className="w-5 h-5" />
-              </Button>
             </div>
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               <Input
                 id="search-input"
                 ref={searchRef}
-                placeholder="Search lineups… (/)"
+                placeholder="Search lineups... (/)"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10 bg-background/80 border-border/80 focus-visible:ring-2"
@@ -233,14 +210,14 @@ function HomePageInner() {
             {lineupsLoading ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <div className="h-8 w-8 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin mb-3" />
-                <span className="text-sm">Loading lineups…</span>
+                <span className="text-sm">Loading lineups...</span>
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <p className="text-muted-foreground text-sm">
                   {search ? 'No lineups match your search.' : `No lineups for ${selectedMap} yet.`}
                 </p>
-                <p className="text-muted-foreground/80 text-xs mt-1">Try another map or add one.</p>
+                <p className="text-muted-foreground/80 text-xs mt-1">Try another map selection.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -281,8 +258,6 @@ function HomePageInner() {
           </div>
         </>
       )}
-
-      {showAdd && <LineupForm onClose={refreshAfterAdd} initialMap={selectedMap ?? undefined} />}
     </main>
   );
 }

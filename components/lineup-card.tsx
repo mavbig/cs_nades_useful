@@ -1,8 +1,9 @@
 'use client';
-import { Lineup } from '@prisma/client';
+import { Lineup } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { MapPin } from 'lucide-react';
+import { getMediaUrl } from '@/lib/media';
 
 interface LineupCardProps {
   lineup: Lineup;
@@ -30,7 +31,7 @@ export function LineupCard({ lineup, selected }: LineupCardProps) {
     >
       <div className="relative w-28 h-[4.5rem] rounded-lg overflow-hidden bg-muted flex-shrink-0 ring-1 ring-border/50">
         <img
-          src={`/api/media/${lineup.screenshotPath}`}
+          src={getMediaUrl(lineup.screenshotPath)}
           alt=""
           className="object-cover w-full h-full scale-[7] origin-center"
         />

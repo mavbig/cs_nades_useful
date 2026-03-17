@@ -44,6 +44,20 @@ Ein lokales, extrem schnelles Browser-Tool für CS2 Nade-Lineups, optimiert für
 - **OneDrive:** Nutze keinen Ordner, der von OneDrive synchronisiert wird, da dies die SQLite-Datenbank blockieren kann.
 - **Defender:** Wenn Uploads hängen, schließe den `./data` Ordner vom Echtzeit-Scan des Windows Defenders aus.
 
+## Deployment (Cloudflare Pages + R2)
+
+Dieses Tool kann als rein statische Webseite auf **Cloudflare Pages** gehostet werden. Die Medien (Videos/Bilder) liegen dabei in einem **Cloudflare R2** Bucket.
+
+### Kurzanleitung:
+1. **R2 vorbereiten:** Lade den Inhalt von `data/media` in einen R2-Bucket hoch.
+2. **Environment Variable:** 
+   - **Lokal:** Erstelle eine `.env` Datei mit `NEXT_PUBLIC_MEDIA_BASE_URL=https://deine-r2-url.com`.
+   - **Cloudflare:** Füge die Variable `NEXT_PUBLIC_MEDIA_BASE_URL` in den Pages-Settings hinzu.
+3. **Build:** Führe `npm run build` aus. Das Tool exportiert alle Daten aus der SQLite-Datenbank automatisch in eine statische JSON-Datei.
+4. **Upload:** Lade den `out/` Ordner zu Cloudflare Pages hoch.
+
+Detaillierte Anweisungen findest du in der [DEPLOY.md](./DEPLOY.md).
+
 ## Stack
 - Next.js 15 (App Router)
 - Tailwind CSS + shadcn/ui

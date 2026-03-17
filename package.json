@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --experimental-https --experimental-https-key ./certs/server.key --experimental-https-cert ./certs/server.crt",
-    "build": "next build",
+    "build": "npm run export-data && next build",
     "start": "next start",
     "lint": "next lint",
+    "export-data": "tsx scripts/export-lineups.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
     "postcss": "^8.5.2",
     "prisma": "^6.4.0",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

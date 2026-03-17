@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from './ui/select';
 
-import { Lineup } from '@prisma/client';
+import { Lineup } from '@/lib/types';
 import { MAPS } from '@/lib/maps';
 
 export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedLineup?: Lineup) => void; initialMap?: string; lineup?: Lineup }) {

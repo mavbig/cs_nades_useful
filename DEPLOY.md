@@ -1,42 +1,74 @@
-# Deployment Guide: Cloudflare Pages + R2
+# Deployment & Development Guide
 
-This project is configured for **Static Export**. All data is bundled into the `out/` directory during the build process.
+Dieses Projekt nutzt einen hybriden Ansatz: **Lokal** wird eine dynamische Datenbank (SQLite + Prisma) verwendet, um Lineups einfach über die UI hinzuzufügen. **Live** auf Cloudflare Pages läuft die Seite als rein statischer Export für maximale Performance.
 
-## Prerequisites
-1.  **Cloudflare Account** with Pages and R2 enabled.
-2.  **R2 Bucket** for hosting media (screenshots and videos).
-3.  **Public URL** for your R2 bucket (either a custom domain or a `r2.dev` subdomain).
+---
 
-## 1. Prepare Media (Cloudflare R2)
-Upload your `data/media` folder to your R2 bucket.
-The structure should look like this in R2:
+## 🛠️ Lokale Entwicklung & Lineups hinzufügen
+
+Wenn du neue Lineups hinzufügen oder bestehende bearbeiten möchtest:
+
+### 1. Vorbereitung (Ordner umbenennen)
+Benenne den Ordner `app/_api` wieder in `app/api` um.  
+*Warum? Next.js ignoriert Ordner mit Unterstrich (`_`) beim Build. Zum Entwickeln brauchen wir aber die API-Routen.*
+
+### 2. Dev-Server starten
+```bash
+npm run dev
 ```
-media/
-  ├── [uuid]/
-  │   ├── screenshot.jpg
-  │   └── clip.mp4
-  └── ...
+Die Seite zeigt oben rechts jetzt **"Dynamic Mode"** (blau) an. Das bedeutet:
+- Daten werden direkt aus der SQLite-Datenbank gelesen.
+- Der **"Add Lineup"**-Button ist sichtbar.
+- Bilder/Videos werden lokal aus `data/media` geladen.
+
+### 3. Lineups hinzufügen
+Nutze das Formular in der UI, um neue Lineups inklusive Screenshots und Clips hochzuladen. Diese werden automatisch in `prisma/data/db.sqlite` und `data/media/` gespeichert.
+
+---
+
+## 🚀 Deployment (Veröffentlichung)
+
+Wenn du fertig mit dem Hinzufügen bist und die Änderungen live bringen willst:
+
+### 1. API deaktivieren (Wichtig!)
+Benenne den Ordner `app/api` wieder zurück in **`app/_api`**.
+*Hinweis: Wenn du das vergisst, wird `npm run build` fehlschlagen, da dynamische API-Routen nicht statisch exportiert werden können.*
+
+### 2. Media zu Cloudflare R2 hochladen
+Lade die neuen Ordner aus deinem lokalen Verzeichnis `data/media/` in deinen Cloudflare R2 Bucket (`cs-nades-useful`) hoch.
+- **Einfachste Methode:** Per Drag & Drop im Cloudflare Dashboard.
+- **Wichtig:** Behalte die Struktur `media/[UUID]/...` bei.
+
+### 3. Build & Export ausführen
+```bash
+npm run build
+```
+Dieser Befehl macht zwei Dinge:
+1. Er führt `npm run export-data` aus: Die Daten aus deiner SQLite-DB werden in die statischen Dateien `public/data/lineups.json` und `data/static-lineups.json` geschrieben.
+2. Er generiert die statische Seite im Ordner `out/`.
+
+### 4. Committen & Pushen
+Übertrage die Änderungen an Git, damit Cloudflare Pages den automatischen Deploy startet:
+```bash
+git add .
+git commit -m "feat: add new lineups and update static data"
+git push
 ```
 
-## 2. Environment Variables
-In Cloudflare Pages, set the following environment variable:
-- `NEXT_PUBLIC_MEDIA_BASE_URL`: The base URL of your R2 bucket (e.g., `https://media.example.com`). **Do not include a trailing slash.**
+---
 
-## 3. Cloudflare Pages Settings
-- **Framework preset:** `Next.js` (or `None`)
-- **Build command:** `npm run build`
-- **Output directory:** `out`
-- **Node.js version:** `20` or higher
+## 📝 Kurzübersicht der Befehle
 
-## 4. Local Development vs. Production
-- **Local Mode:** You can still run `npm run dev` to use the local SQLite database and API routes (if you rename `app/_api` back to `app/api`).
-- **Static Export:** The build process runs `npm run export-data` which reads from SQLite and generates `public/data/lineups.json`. This JSON is then used to generate the static site.
+| Ziel | Befehl |
+| :--- | :--- |
+| **Lokal entwickeln** | `app/api` (ohne `_`) + `npm run dev` |
+| **Media Sync** | Manuell zu R2 Dashboard hochladen |
+| **Export & Build** | `app/_api` (mit `_`) + `npm run build` |
+| **Datenbank-Schema ändern** | `npx prisma migrate dev` |
 
-## 5. Adding New Lineups
-1.  Rename `app/_api` to `app/api`.
-2.  Run `npm run dev`.
-3.  Add lineups via the UI.
-4.  Rename `app/api` back to `app/_api` (to avoid build errors).
-5.  Run `npm run build` to generate the new static site.
-6.  Upload new media files from `data/media` to your R2 bucket.
-7.  Deploy to Cloudflare Pages.
+---
+
+## 💡 Tipps & Fehlerbehebung
+
+- **Bilder laden lokal nicht?** Prüfe, ob in deiner `.env`-Datei `NEXT_PUBLIC_MEDIA_BASE_URL` auskommentiert ist. Lokal sollte sie leer sein, damit `/api/media` verwendet wird.
+- **Build schlägt fehl?** Prüfe, ob der Ordner wirklich `_api` heißt. Next.js darf im Export-Modus keine aktiven API-Routen im `app`-Verzeichnis finden.

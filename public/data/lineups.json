@@ -1,5 +1,21 @@
 [
   {
+    "id": "859395d6-b74c-4cff-900e-91b910ccc49a",
+    "map": "Ancient",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "B - Cave Smoke",
+    "description": "",
+    "tags": "default",
+    "startSpot": "B - Doors",
+    "throwType": "JUMPTHROW",
+    "tickrate": "ANY",
+    "screenshotPath": "media/859395d6-b74c-4cff-900e-91b910ccc49a/screenshot.png",
+    "clipPath": "media/859395d6-b74c-4cff-900e-91b910ccc49a/clip.mkv",
+    "createdAt": "2026-03-21T13:34:30.101Z",
+    "updatedAt": "2026-03-21T13:34:30.101Z"
+  },
+  {
     "id": "dd51e408-a13a-4cb0-95c6-a9119e0a8471",
     "map": "Ancient",
     "side": "T",

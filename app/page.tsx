@@ -4,12 +4,13 @@ import { Lineup, MapCount } from '@/lib/types';
 import { LineupCard } from '@/components/lineup-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowLeft, Map as MapIcon } from 'lucide-react';
+import { Search, ArrowLeft, Map as MapIcon, Plus } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MAPS } from '@/lib/maps';
 import { cn, normalizeMapName } from '@/lib/utils';
 import { getMapCounts, getLineupsByMap } from '@/lib/data';
 import { getMapImageUrl } from '@/lib/media';
+import { LineupForm } from '@/components/lineup-form';
 
 function HomePageInner() {
   const searchParams = useSearchParams();
@@ -20,8 +21,11 @@ function HomePageInner() {
   const [lineupsLoading, setLineupsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [showForm, setShowForm] = useState(false);
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const isDynamic = process.env.NODE_ENV === 'development';
 
   // Sync selected map with ?map= query parameter
   useEffect(() => {
@@ -33,12 +37,24 @@ function HomePageInner() {
     setSelectedMap(mapParam);
   }, [searchParams]);
 
-  useEffect(() => {
-    getMapCounts().then((data) => {
+  const refreshData = async () => {
+    if (isDynamic) {
+      setMapsLoading(true);
+      const res = await fetch('/api/lineups/maps');
+      const data = await res.json();
       setMapCounts(data);
       setMapsLoading(false);
-    });
-  }, []);
+    } else {
+      getMapCounts().then((data) => {
+        setMapCounts(data);
+        setMapsLoading(false);
+      });
+    }
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, [isDynamic]);
 
   useEffect(() => {
     if (!selectedMap) {
@@ -46,11 +62,20 @@ function HomePageInner() {
       return;
     }
     setLineupsLoading(true);
-    getLineupsByMap(selectedMap).then((data) => {
-      setLineups(data);
-      setLineupsLoading(false);
-    });
-  }, [selectedMap]);
+    if (isDynamic) {
+      fetch(`/api/lineups?map=${encodeURIComponent(selectedMap)}`)
+        .then(res => res.json())
+        .then(data => {
+          setLineups(data);
+          setLineupsLoading(false);
+        });
+    } else {
+      getLineupsByMap(selectedMap).then((data) => {
+        setLineups(data);
+        setLineupsLoading(false);
+      });
+    }
+  }, [selectedMap, isDynamic]);
 
   const getCountForMap = (mapName: string): number => {
     const normalized = normalizeMapName(mapName);
@@ -114,7 +139,23 @@ function HomePageInner() {
           <header className="shrink-0 border-b border-border/80 bg-card/50 backdrop-blur-sm px-4 py-4 max-w-[900px] mx-auto w-full">
             <div className="flex items-center justify-between gap-3">
               <h1 className="text-lg font-semibold tracking-tight text-foreground">CS2 Nades</h1>
-              <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Static Mode</div>
+              <div className="flex items-center gap-2">
+                {isDynamic && (
+                  <Button
+                    size="sm"
+                    className="h-7 rounded-md px-2 text-xs gap-1"
+                    onClick={() => setShowForm(true)}
+                  >
+                    <Plus className="w-3 h-3" /> Add Lineup
+                  </Button>
+                )}
+                <div className={cn(
+                  "text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border",
+                  isDynamic ? "bg-blue-500/10 text-blue-400 border-blue-500/20" : "bg-muted text-muted-foreground border-border/50"
+                )}>
+                  {isDynamic ? 'Dynamic Mode' : 'Static Mode'}
+                </div>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground mt-1">Choose a map</p>
           </header>
@@ -171,27 +212,38 @@ function HomePageInner() {
       ) : (
         <>
           <header className="shrink-0 border-b border-border/80 bg-card/50 backdrop-blur-sm px-4 py-4 space-y-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setSelectedMap(null);
-                  setSearch('');
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.delete('map');
-                  const qs = params.toString();
-                  router.push(qs ? `/?${qs}` : '/');
-                }}
-                className="shrink-0 rounded-lg"
-                aria-label="Back to map selection"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center gap-2 min-w-0">
-                <MapIcon className="w-4 h-4 text-muted-foreground shrink-0" />
-                <h1 className="text-lg font-semibold tracking-tight truncate">{selectedMap}</h1>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setSelectedMap(null);
+                    setSearch('');
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.delete('map');
+                    const qs = params.toString();
+                    router.push(qs ? `/?${qs}` : '/');
+                  }}
+                  className="shrink-0 rounded-lg"
+                  aria-label="Back to map selection"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapIcon className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <h1 className="text-lg font-semibold tracking-tight truncate">{selectedMap}</h1>
+                </div>
               </div>
+              {isDynamic && (
+                <Button
+                  size="sm"
+                  className="h-8 rounded-md px-3 text-xs gap-1.5"
+                  onClick={() => setShowForm(true)}
+                >
+                  <Plus className="w-4 h-4" /> Add Lineup
+                </Button>
+              )}
             </div>
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -217,6 +269,15 @@ function HomePageInner() {
                 <p className="text-muted-foreground text-sm">
                   {search ? 'No lineups match your search.' : `No lineups for ${selectedMap} yet.`}
                 </p>
+                {isDynamic && (
+                  <Button
+                    variant="link"
+                    className="mt-2 text-primary text-xs"
+                    onClick={() => setShowForm(true)}
+                  >
+                    Add the first lineup
+                  </Button>
+                )}
                 <p className="text-muted-foreground/80 text-xs mt-1">Try another map selection.</p>
               </div>
             ) : (
@@ -257,6 +318,15 @@ function HomePageInner() {
             )}
           </div>
         </>
+      )}
+      {showForm && (
+        <LineupForm
+          initialMap={selectedMap || undefined}
+          onClose={(newLineup) => {
+            setShowForm(false);
+            if (newLineup) refreshData();
+          }}
+        />
       )}
     </main>
   );

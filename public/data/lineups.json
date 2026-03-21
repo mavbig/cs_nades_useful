@@ -8,12 +8,12 @@
     "description": "",
     "tags": "entry, molly",
     "startSpot": "Lower Dungeon",
-    "throwType": "LEFT+RIGHT CLICK",
+    "throwType": "DUCK LEFT RIGHT CLICK",
     "tickrate": "ANY",
     "screenshotPath": "media/66e4d483-0977-41e6-8408-d9ff8653fd90/screenshot.png",
     "clipPath": "media/66e4d483-0977-41e6-8408-d9ff8653fd90/clip.mkv",
     "createdAt": "2026-03-21T14:01:11.944Z",
-    "updatedAt": "2026-03-21T14:01:11.944Z"
+    "updatedAt": "2026-03-21T14:15:20.253Z"
   },
   {
     "id": "859395d6-b74c-4cff-900e-91b910ccc49a",

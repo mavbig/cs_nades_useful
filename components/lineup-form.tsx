@@ -208,13 +208,14 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                       <SelectItem value="STAND">Stand</SelectItem>
                       <SelectItem value="WALK">Walk</SelectItem>
                       <SelectItem value="RUN">Run</SelectItem>
-                      <SelectItem value="JUMPTHROW">Jump throw</SelectItem>
-                      <SelectItem value="A JUMPTHROW">A Jump throw</SelectItem>
-                      <SelectItem value="D JUMPTHROW">D Jump throw</SelectItem>
-                      <SelectItem value="RUN JUMPTHROW">Run Jump throw</SelectItem>
-                      <SelectItem value="WALK JUMPTHROW">Walk Jump throw</SelectItem>
-                      <SelectItem value="RIGHT CLICK">Right click</SelectItem>
-                      <SelectItem value="LEFT+RIGHT CLICK">Left+Right click</SelectItem>
+                      <SelectItem value="JUMPTHROW">Jumpthrow</SelectItem>
+                      <SelectItem value="A JUMPTHROW">A Jumpthrow</SelectItem>
+                      <SelectItem value="D JUMPTHROW">D Jumpthrow</SelectItem>
+                      <SelectItem value="RUN JUMPTHROW">Run Jumpthrow</SelectItem>
+                      <SelectItem value="WALK JUMPTHROW">Walk Jumpthrow</SelectItem>
+                      <SelectItem value="RIGHT CLICK">Right Click</SelectItem>
+                      <SelectItem value="LEFT+RIGHT CLICK">Left+Right Click</SelectItem>
+                      <SelectItem value="DUCK LEFT RIGHT CLICK">Duck Left+Right Click</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

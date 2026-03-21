@@ -2,17 +2,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { Lineup } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, MoveUp, Tag, Zap } from 'lucide-react';
+import { ArrowLeft, MapPin, MoveUp, Tag, Zap, Edit2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getMediaUrl } from '@/lib/media';
+import { LineupForm } from '@/components/lineup-form';
 
 type MediaView = 'video' | 'screenshot';
 
-export default function DetailPageClient({ lineup }: { lineup: Lineup }) {
+export default function DetailPageClient({ lineup: initialLineup }: { lineup: Lineup }) {
+  const [lineup, setLineup] = useState<Lineup>(initialLineup);
   const [mediaView, setMediaView] = useState<MediaView>('video');
+  const [showEditForm, setShowEditForm] = useState(false);
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const isDynamic = process.env.NODE_ENV === 'development';
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -63,6 +68,17 @@ export default function DetailPageClient({ lineup }: { lineup: Lineup }) {
             </div>
           </div>
         </div>
+        {isDynamic && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5"
+            onClick={() => setShowEditForm(true)}
+          >
+            <Edit2 className="w-3.5 h-3.5" />
+            Edit
+          </Button>
+        )}
       </header>
 
       <div className="flex-1 flex flex-col min-h-0">
@@ -101,6 +117,7 @@ export default function DetailPageClient({ lineup }: { lineup: Lineup }) {
           ) : (
             <div className="flex-1 relative w-full flex flex-col min-h-0">
               <video
+                key={lineup.clipPath}
                 ref={videoRef}
                 src={getMediaUrl(lineup.clipPath)}
                 controls
@@ -121,6 +138,17 @@ export default function DetailPageClient({ lineup }: { lineup: Lineup }) {
           )}
         </div>
       </div>
+      {showEditForm && (
+        <LineupForm
+          lineup={lineup}
+          onClose={(updated) => {
+            setShowEditForm(false);
+            if (updated) {
+              setLineup(updated);
+            }
+          }}
+        />
+      )}
     </main>
   );
 }

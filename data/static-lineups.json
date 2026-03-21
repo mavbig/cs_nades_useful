@@ -1,5 +1,37 @@
 [
   {
+    "id": "3577c5b5-1d7e-481a-8a5c-ed96aa6893c1",
+    "map": "Ancient",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "A - Elbow CT Spawn",
+    "description": "",
+    "tags": "a, default",
+    "startSpot": "T - Stairs",
+    "throwType": "JUMPTHROW",
+    "tickrate": "ANY",
+    "screenshotPath": "media/3577c5b5-1d7e-481a-8a5c-ed96aa6893c1/screenshot.png",
+    "clipPath": "media/3577c5b5-1d7e-481a-8a5c-ed96aa6893c1/clip.mkv",
+    "createdAt": "2026-03-21T19:18:56.741Z",
+    "updatedAt": "2026-03-21T19:18:56.741Z"
+  },
+  {
+    "id": "0315a081-29ba-4ecf-8057-1784052ee1ba",
+    "map": "Ancient",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "A - Donut Smoke",
+    "description": "",
+    "tags": "entry, default, a",
+    "startSpot": "T - Stairs",
+    "throwType": "JUMPTHROW",
+    "tickrate": "ANY",
+    "screenshotPath": "media/0315a081-29ba-4ecf-8057-1784052ee1ba/screenshot.png",
+    "clipPath": "media/0315a081-29ba-4ecf-8057-1784052ee1ba/clip.mkv",
+    "createdAt": "2026-03-21T19:17:37.068Z",
+    "updatedAt": "2026-03-21T19:17:37.068Z"
+  },
+  {
     "id": "66e4d483-0977-41e6-8408-d9ff8653fd90",
     "map": "Dust2",
     "side": "T",

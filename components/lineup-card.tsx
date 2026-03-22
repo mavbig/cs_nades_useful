@@ -2,8 +2,16 @@
 import { Lineup } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { MapPin } from 'lucide-react';
+import { MapPin, Cloud, Zap, Flame, Bomb, CircleDashed, LayoutGrid } from 'lucide-react';
 import { getMediaUrl } from '@/lib/media';
+
+const UTILITY_ICONS = {
+  SMOKE: Cloud,
+  FLASH: Zap,
+  MOLLY: Flame,
+  HE: Bomb,
+  DECOY: CircleDashed,
+} as const;
 
 interface LineupCardProps {
   lineup: Lineup;
@@ -12,6 +20,7 @@ interface LineupCardProps {
 
 export function LineupCard({ lineup, selected }: LineupCardProps) {
   const router = useRouter();
+  const UtilityIcon = UTILITY_ICONS[lineup.utility as keyof typeof UTILITY_ICONS] || LayoutGrid;
 
   return (
     <button
@@ -50,7 +59,8 @@ export function LineupCard({ lineup, selected }: LineupCardProps) {
           >
             {lineup.side}
           </span>
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+            <UtilityIcon className="w-3 h-3" />
             {lineup.utility}
           </span>
         </div>

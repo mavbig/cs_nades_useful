@@ -4,6 +4,7 @@ Ein lokales, extrem schnelles Browser-Tool für CS2 Nade-Lineups, optimiert für
 
 ## Features
 - **Keyboard-First:** Blitzschnelle Navigation via Tastatur.
+- **Nade-Filtering:** Schnelles Filtern nach Utility-Typ (Smoke, Flash, etc.) mit Hotkeys.
 - **Overlay Optimized:** Clean Dark UI, perfekt für kleine Fenster (900x600).
 - **Offline-First:** Alles bleibt lokal auf deinem Rechner (SQLite + Lokale Medien).
 - **Media Support:** Pro Lineup ein Screenshot (Aiming) und ein Clip (Video).
@@ -34,6 +35,7 @@ Ein lokales, extrem schnelles Browser-Tool für CS2 Nade-Lineups, optimiert für
 
 ## Tastenkombinationen (Hotkeys)
 - `/` : Fokus auf das Suchfeld
+- `1-6` : Utility-Filter (All, Smoke, Flash, Molly, HE, Decoy)
 - `↑ / ↓` : Navigieren in der Liste
 - `Enter` : Ausgewähltes Lineup öffnen
 - `g` oder `Esc` : Zurück zur Liste / Suche

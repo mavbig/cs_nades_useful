@@ -47,6 +47,9 @@ export function KeyboardManager() {
           e.preventDefault();
           window.dispatchEvent(new CustomEvent('app:select-lineup'));
         }
+        if (['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+          window.dispatchEvent(new CustomEvent('app:utility-hotkey', { detail: { key: e.key } }));
+        }
       }
 
       // Detail page specific (p, g, Escape, Delete)

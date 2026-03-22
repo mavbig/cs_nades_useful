@@ -135,15 +135,27 @@ function HomePageInner() {
       router.push(qs ? `/?${qs}` : '/');
     };
 
+    const handleUtilityHotkey = (e: CustomEvent) => {
+      const { key } = e.detail;
+      const index = parseInt(key) - 1;
+      if (index >= 0 && index < UTILITIES.length) {
+        setSelectedUtility(UTILITIES[index].id);
+      }
+    };
+
     window.addEventListener('app:next-lineup', handleNext);
     window.addEventListener('app:prev-lineup', handlePrev);
     window.addEventListener('app:select-lineup', handleSelect);
     window.addEventListener('app:goto-map-selection', handleGoToMapSelection);
+    // @ts-ignore
+    window.addEventListener('app:utility-hotkey', handleUtilityHotkey);
     return () => {
       window.removeEventListener('app:next-lineup', handleNext);
       window.removeEventListener('app:prev-lineup', handlePrev);
       window.removeEventListener('app:select-lineup', handleSelect);
       window.removeEventListener('app:goto-map-selection', handleGoToMapSelection);
+      // @ts-ignore
+      window.removeEventListener('app:utility-hotkey', handleUtilityHotkey);
     };
   }, [filtered, selectedIndex, router, searchParams, selectedMap]);
 

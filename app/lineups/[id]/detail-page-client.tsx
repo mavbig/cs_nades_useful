@@ -20,22 +20,19 @@ export default function DetailPageClient({ lineup: initialLineup }: { lineup: Li
   const isDynamic = process.env.NODE_ENV === 'development';
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      const isTyping = 
-        target.tagName === 'INPUT' || 
-        target.tagName === 'TEXTAREA' || 
-        target.isContentEditable;
-
-      if (isTyping) return;
-
-      if (e.key === 's' || e.key === 'S') {
-        e.preventDefault();
-        setMediaView((v) => (v === 'video' ? 'screenshot' : 'video'));
-      }
+    const handleToggleMedia = () => {
+      setMediaView((v) => (v === 'video' ? 'screenshot' : 'video'));
     };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    // @ts-ignore
+    window.addEventListener('app:toggle-media', handleToggleMedia);
+    // @ts-ignore
+    window.addEventListener('app:close-form', () => setShowEditForm(false));
+    return () => {
+      // @ts-ignore
+      window.removeEventListener('app:toggle-media', handleToggleMedia);
+      // @ts-ignore
+      window.removeEventListener('app:close-form', () => setShowEditForm(false));
+    };
   }, []);
 
   return (

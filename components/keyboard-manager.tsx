@@ -35,6 +35,9 @@ export function KeyboardManager() {
           e.preventDefault();
           window.dispatchEvent(new CustomEvent('app:goto-map-selection'));
         }
+        if (e.key === 'Escape') {
+          window.dispatchEvent(new CustomEvent('app:close-form'));
+        }
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           window.dispatchEvent(new CustomEvent('app:next-lineup'));
@@ -54,6 +57,17 @@ export function KeyboardManager() {
 
       // Detail page specific (p, g, Escape, Delete)
       if (pathname.startsWith('/lineups/')) {
+        if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('app:toggle-media'));
+        }
+        if (e.key === 'Escape') {
+          // Check if there is a form open by checking for an event listener that stops propagation
+          // Or just let both happen? No, form should close first.
+          // But KeyboardManager doesn't know if a form is open.
+          // We'll let app:close-form handlers decide.
+          window.dispatchEvent(new CustomEvent('app:close-form'));
+        }
         if (e.key === 'p' || e.key === 'Escape' || e.key === 'g') {
           e.preventDefault();
           router.back();

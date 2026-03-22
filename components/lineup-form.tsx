@@ -40,22 +40,13 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
   useEffect(() => {
     fetch('/api/tags').then(res => res.json()).then(setAvailableTags).catch(console.error);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        const target = e.target as HTMLElement;
-        const isTyping = 
-          target.tagName === 'INPUT' || 
-          target.tagName === 'TEXTAREA' || 
-          target.isContentEditable;
-        
-        if (!isTyping) {
-          e.stopPropagation();
-          onClose();
-        }
-      }
+    const handleClose = () => onClose();
+    // @ts-ignore
+    window.addEventListener('app:close-form', handleClose);
+    return () => {
+      // @ts-ignore
+      window.removeEventListener('app:close-form', handleClose);
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
   const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(Boolean);

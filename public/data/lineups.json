@@ -1,5 +1,37 @@
 [
   {
+    "id": "ef421d13-d7e4-4f07-b8aa-954fd534d5fd",
+    "map": "Inferno",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "B - Smoke CT",
+    "description": "",
+    "tags": "smoke",
+    "startSpot": "Banana",
+    "throwType": "STAND",
+    "tickrate": "ANY",
+    "screenshotPath": "media/ef421d13-d7e4-4f07-b8aa-954fd534d5fd/screenshot.png",
+    "clipPath": "media/ef421d13-d7e4-4f07-b8aa-954fd534d5fd/clip.mkv",
+    "createdAt": "2026-04-16T17:39:11.831Z",
+    "updatedAt": "2026-04-16T17:39:11.831Z"
+  },
+  {
+    "id": "b6204de5-8b0a-489e-b91c-ebbe9385af5f",
+    "map": "Inferno",
+    "side": "T",
+    "utility": "MOLLY",
+    "title": "B - Molly Back Site",
+    "description": "",
+    "tags": "molly",
+    "startSpot": "Banana",
+    "throwType": "STAND",
+    "tickrate": "ANY",
+    "screenshotPath": "media/b6204de5-8b0a-489e-b91c-ebbe9385af5f/screenshot.png",
+    "clipPath": "media/b6204de5-8b0a-489e-b91c-ebbe9385af5f/clip.mkv",
+    "createdAt": "2026-04-16T17:36:57.632Z",
+    "updatedAt": "2026-04-16T17:36:57.632Z"
+  },
+  {
     "id": "3577c5b5-1d7e-481a-8a5c-ed96aa6893c1",
     "map": "Ancient",
     "side": "T",

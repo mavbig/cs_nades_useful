@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getMediaUrl } from '@/lib/media';
 import { SpawnSmokeSetForm } from '@/components/spawn-smoke-set-form';
-import { getSpawnColor } from '@/lib/spawn-colors';
 
 function isPositionConfigured(position: SpawnSmokeSet['positions'][number]) {
   return Boolean(position.screenshotPath);
@@ -125,7 +124,6 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
 
             <div className="flex flex-wrap gap-2">
               {set.positions.map((position, index) => {
-                const colors = getSpawnColor(index);
                 const configured = isPositionConfigured(position);
                 const selected = index === activeIndex;
 
@@ -141,7 +139,7 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                       !configured && 'border-border/50 bg-muted/30 text-muted-foreground/60 cursor-not-allowed',
                       configured && !selected && 'border-border/70 bg-card/50 text-foreground hover:bg-card hover:border-border',
-                      selected && configured && cn(colors.border, colors.bg, colors.text, 'ring-2', colors.ring),
+                      selected && configured && 'border-accent-foreground/25 bg-accent text-accent-foreground ring-2 ring-ring',
                     )}
                   >
                     <span className="flex items-center gap-2">
@@ -150,8 +148,8 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
                           'inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold border',
                           configured
                             ? selected
-                              ? cn(colors.bg, colors.text, colors.border)
-                              : cn(colors.border, 'bg-background/80', colors.text)
+                              ? 'border-accent-foreground/30 bg-background/80 text-accent-foreground'
+                              : 'border-border bg-background/80 text-foreground'
                             : 'bg-muted border-border/50 text-muted-foreground',
                         )}
                       >
@@ -178,13 +176,7 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
                       <p className="text-xs text-muted-foreground mt-1">{selectedPosition.description}</p>
                     )}
                   </div>
-                  <span
-                    className={cn(
-                      'text-[10px] font-semibold px-2 py-1 rounded-md uppercase tracking-wider',
-                      getSpawnColor(activeIndex).bg,
-                      getSpawnColor(activeIndex).text,
-                    )}
-                  >
+                  <span className="text-[10px] font-semibold px-2 py-1 rounded-md uppercase tracking-wider bg-muted text-muted-foreground">
                     {selectedPosition.throwType || 'STAND'}
                   </span>
                 </div>

@@ -63,6 +63,11 @@ export function KeyboardManager() {
           e.preventDefault();
           router.back();
         }
+        if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(e.key)) {
+          window.dispatchEvent(
+            new CustomEvent('app:spawn-select', { detail: { index: Number(e.key) - 1 } }),
+          );
+        }
       }
 
       // Detail page specific (p, g, Escape, Delete)

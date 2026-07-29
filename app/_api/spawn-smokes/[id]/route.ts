@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { mkdir, rm, writeFile } from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { saveSpawnSmokeSetImage } from '@/lib/spawn-smoke-media';
 
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
@@ -10,8 +11,30 @@ type PositionInput = {
   id?: string;
   label: string;
   description?: string;
+  throwType?: string;
   screenshotPath?: string;
 };
+
+async function resolveSetImages(
+  setId: string,
+  formData: FormData,
+  existing?: { overviewImagePath: string | null; thumbnailPath: string | null },
+) {
+  let overviewImagePath = existing?.overviewImagePath ?? null;
+  let thumbnailPath = existing?.thumbnailPath ?? null;
+
+  const overview = formData.get('overview_image') as File | null;
+  if (overview && overview.size > 0) {
+    overviewImagePath = await saveSpawnSmokeSetImage(setId, overview, 'overview');
+  }
+
+  const thumbnail = formData.get('thumbnail_image') as File | null;
+  if (thumbnail && thumbnail.size > 0) {
+    thumbnailPath = await saveSpawnSmokeSetImage(setId, thumbnail, 'thumbnail');
+  }
+
+  return { overviewImagePath, thumbnailPath };
+}
 
 export async function GET(
   _req: NextRequest,
@@ -73,6 +96,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
+    const { overviewImagePath, thumbnailPath } = await resolveSetImages(id, formData, existingSet);
+
     if (!positionsJson) {
       const set = await prisma.spawnSmokeSet.update({
         where: { id },
@@ -81,6 +106,8 @@ export async function PATCH(
           side: formData.get('side') as string,
           title: formData.get('title') as string,
           description: (formData.get('description') as string) || null,
+          overviewImagePath,
+          thumbnailPath,
         },
         include: {
           positions: {
@@ -123,6 +150,7 @@ export async function PATCH(
         id: position.id || uuidv4(),
         label: position.label,
         description: position.description || null,
+        throwType: position.throwType || 'STAND',
         sortOrder: index,
         screenshotPath,
       });
@@ -136,6 +164,8 @@ export async function PATCH(
         side: formData.get('side') as string,
         title: formData.get('title') as string,
         description: (formData.get('description') as string) || null,
+        overviewImagePath,
+        thumbnailPath,
         positions: {
           create: nextPositions,
         },

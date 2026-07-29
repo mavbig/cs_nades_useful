@@ -13,7 +13,7 @@ interface SpawnSmokeSetCardProps {
 
 export function SpawnSmokeSetCard({ set, selected }: SpawnSmokeSetCardProps) {
   const router = useRouter();
-  const previewPath = set.positions[0]?.screenshotPath;
+  const previewPath = set.thumbnailPath ?? set.positions[0]?.screenshotPath;
 
   return (
     <button

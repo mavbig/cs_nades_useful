@@ -14,12 +14,15 @@ function serializeSet(
     side: string;
     title: string;
     description: string | null;
+    overviewImagePath: string | null;
+    thumbnailPath: string | null;
     createdAt: Date;
     updatedAt: Date;
     positions: {
       id: string;
       label: string;
       sortOrder: number;
+      throwType: string;
       screenshotPath: string;
       description: string | null;
     }[];
@@ -31,6 +34,8 @@ function serializeSet(
     side: set.side,
     title: set.title,
     description: set.description,
+    overviewImagePath: set.overviewImagePath,
+    thumbnailPath: set.thumbnailPath,
     createdAt: set.createdAt.toISOString(),
     updatedAt: set.updatedAt.toISOString(),
     positions: set.positions
@@ -40,6 +45,7 @@ function serializeSet(
         id: position.id,
         label: position.label,
         sortOrder: position.sortOrder,
+        throwType: position.throwType,
         screenshotPath: position.screenshotPath,
         description: position.description,
       })),

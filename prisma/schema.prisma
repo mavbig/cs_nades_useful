@@ -27,14 +27,16 @@ model Lineup {
 }
 
 model SpawnSmokeSet {
-  id          String               @id @default(uuid())
-  map         String
-  side        String               // "T" or "CT"
-  title       String
-  description String?
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  positions   SpawnSmokePosition[]
+  id                String               @id @default(uuid())
+  map               String
+  side              String               // "T" or "CT"
+  title             String
+  description       String?
+  overviewImagePath String?
+  thumbnailPath     String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  positions         SpawnSmokePosition[]
 
   @@index([map])
 }
@@ -45,6 +47,7 @@ model SpawnSmokePosition {
   set            SpawnSmokeSet @relation(fields: [setId], references: [id], onDelete: Cascade)
   label          String
   sortOrder      Int
+  throwType      String        @default("STAND")
   screenshotPath String
   description    String?
 

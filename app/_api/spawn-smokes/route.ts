@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { saveSpawnSmokeSetImage } from '@/lib/spawn-smoke-media';
 
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
@@ -13,6 +14,7 @@ function normalizeMapName(name: string): string {
 type PositionInput = {
   label: string;
   description?: string;
+  throwType?: string;
 };
 
 export async function GET(req: NextRequest) {
@@ -76,9 +78,23 @@ export async function POST(req: NextRequest) {
         id: positionId,
         label: position.label,
         description: position.description || null,
+        throwType: position.throwType || 'STAND',
         sortOrder: index,
         screenshotPath: screenshotRelPath,
       });
+    }
+
+    let overviewImagePath: string | null = null;
+    let thumbnailPath: string | null = null;
+
+    const overview = formData.get('overview_image') as File | null;
+    if (overview && overview.size > 0) {
+      overviewImagePath = await saveSpawnSmokeSetImage(setId, overview, 'overview');
+    }
+
+    const thumbnail = formData.get('thumbnail_image') as File | null;
+    if (thumbnail && thumbnail.size > 0) {
+      thumbnailPath = await saveSpawnSmokeSetImage(setId, thumbnail, 'thumbnail');
     }
 
     const set = await prisma.spawnSmokeSet.create({
@@ -88,6 +104,8 @@ export async function POST(req: NextRequest) {
         side: formData.get('side') as string,
         title: formData.get('title') as string,
         description: (formData.get('description') as string) || null,
+        overviewImagePath,
+        thumbnailPath,
         positions: {
           create: createdPositions,
         },

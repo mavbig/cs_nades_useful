@@ -24,6 +24,7 @@ export interface SpawnSmokePosition {
   id: string;
   label: string;
   sortOrder: number;
+  throwType: string;
   screenshotPath: string;
   description: string | null;
 }
@@ -34,6 +35,8 @@ export interface SpawnSmokeSet {
   side: string;
   title: string;
   description: string | null;
+  overviewImagePath: string | null;
+  thumbnailPath: string | null;
   positions: SpawnSmokePosition[];
   createdAt: string;
   updatedAt: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -14,11 +14,14 @@ import {
 } from './ui/select';
 import { SpawnSmokeSet } from '@/lib/types';
 import { MAPS } from '@/lib/maps';
+import { ThrowTypeSelect } from './throw-type-select';
+import { getMediaUrl } from '@/lib/media';
 
 type PositionRow = {
   id?: string;
   label: string;
   description: string;
+  throwType: string;
   screenshotPath?: string;
   file: File | null;
 };
@@ -27,6 +30,7 @@ function createDefaultRows(count = 5): PositionRow[] {
   return Array.from({ length: count }, (_, index) => ({
     label: `Spawn ${index + 1}`,
     description: '',
+    throwType: 'STAND',
     file: null,
   }));
 }
@@ -40,6 +44,7 @@ function rowsFromSet(set?: SpawnSmokeSet): PositionRow[] {
     id: position.id,
     label: position.label,
     description: position.description || '',
+    throwType: position.throwType || 'STAND',
     screenshotPath: position.screenshotPath,
     file: null,
   }));
@@ -62,6 +67,36 @@ export function SpawnSmokeSetForm({
     description: spawnSmokeSet?.description ?? '',
   });
   const [positions, setPositions] = useState<PositionRow[]>(() => rowsFromSet(spawnSmokeSet));
+  const [overviewFile, setOverviewFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+
+  const overviewPreview = useMemo(() => {
+    if (overviewFile) return URL.createObjectURL(overviewFile);
+    if (spawnSmokeSet?.overviewImagePath) return getMediaUrl(spawnSmokeSet.overviewImagePath);
+    return null;
+  }, [overviewFile, spawnSmokeSet?.overviewImagePath]);
+
+  const thumbnailPreview = useMemo(() => {
+    if (thumbnailFile) return URL.createObjectURL(thumbnailFile);
+    if (spawnSmokeSet?.thumbnailPath) return getMediaUrl(spawnSmokeSet.thumbnailPath);
+    return null;
+  }, [thumbnailFile, spawnSmokeSet?.thumbnailPath]);
+
+  useEffect(() => {
+    return () => {
+      if (overviewFile && overviewPreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(overviewPreview);
+      }
+    };
+  }, [overviewFile, overviewPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (thumbnailFile && thumbnailPreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailFile, thumbnailPreview]);
 
   useEffect(() => {
     const handleClose = () => onClose();
@@ -80,7 +115,7 @@ export function SpawnSmokeSetForm({
   const addPosition = () => {
     setPositions((current) => [
       ...current,
-      { label: `Spawn ${current.length + 1}`, description: '', file: null },
+      { label: `Spawn ${current.length + 1}`, description: '', throwType: 'STAND', file: null },
     ]);
   };
 
@@ -124,10 +159,18 @@ export function SpawnSmokeSetForm({
           id: position.id,
           label: position.label,
           description: position.description || undefined,
+          throwType: position.throwType,
           screenshotPath: position.screenshotPath,
         })),
       ),
     );
+
+    if (overviewFile) {
+      data.append('overview_image', overviewFile);
+    }
+    if (thumbnailFile) {
+      data.append('thumbnail_image', thumbnailFile);
+    }
 
     positions.forEach((position, index) => {
       if (position.file) {
@@ -177,7 +220,7 @@ export function SpawnSmokeSetForm({
                     required
                     value={formData.title}
                     onChange={(event) => setFormData({ ...formData, title: event.target.value })}
-                    placeholder="e.g. Red Room Smokes"
+                    placeholder="e.g. Window Smokes"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -227,6 +270,50 @@ export function SpawnSmokeSetForm({
             </section>
 
             <section className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Images
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Overview (top-down spawns)</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setOverviewFile(event.target.files?.[0] ?? null)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Map overview with numbered spawn positions.
+                  </p>
+                  {overviewPreview && (
+                    <img
+                      src={overviewPreview}
+                      alt="Overview preview"
+                      className="mt-2 w-full rounded-lg border border-border object-cover max-h-32"
+                    />
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Thumbnail (smoke landing spot)</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setThumbnailFile(event.target.files?.[0] ?? null)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Shows where the smoke lands — used in the list view.
+                  </p>
+                  {thumbnailPreview && (
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail preview"
+                      className="mt-2 w-full rounded-lg border border-border object-cover max-h-32"
+                    />
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Spawn positions
@@ -266,7 +353,7 @@ export function SpawnSmokeSetForm({
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label>Screenshot</Label>
+                        <Label>Aim screenshot</Label>
                         <Input
                           type="file"
                           accept="image/*"
@@ -276,6 +363,11 @@ export function SpawnSmokeSetForm({
                         />
                       </div>
                     </div>
+                    <ThrowTypeSelect
+                      value={position.throwType}
+                      onValueChange={(value) => updatePosition(index, { throwType: value })}
+                      id={`throw-type-${index}`}
+                    />
                     {position.screenshotPath && !position.file && (
                       <p className="text-xs text-muted-foreground">Current screenshot will be kept unless replaced.</p>
                     )}

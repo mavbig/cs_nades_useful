@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { ThrowTypeSelect } from './throw-type-select';
 
 import { Lineup } from '@/lib/types';
 import { MAPS } from '@/lib/maps';
@@ -187,28 +188,10 @@ export function LineupForm({ onClose, initialMap, lineup }: { onClose: (updatedL
                   </Select>
                 </div>
                 <div className="space-y-1.5 col-span-2">
-                  <Label>Throw type</Label>
-                  <Select
+                  <ThrowTypeSelect
                     value={formData.throwType}
                     onValueChange={(value) => setFormData({ ...formData, throwType: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Throw type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="STAND">Stand</SelectItem>
-                      <SelectItem value="WALK">Walk</SelectItem>
-                      <SelectItem value="RUN">Run</SelectItem>
-                      <SelectItem value="JUMPTHROW">Jumpthrow</SelectItem>
-                      <SelectItem value="A JUMPTHROW">A Jumpthrow</SelectItem>
-                      <SelectItem value="D JUMPTHROW">D Jumpthrow</SelectItem>
-                      <SelectItem value="RUN JUMPTHROW">Run Jumpthrow</SelectItem>
-                      <SelectItem value="WALK JUMPTHROW">Walk Jumpthrow</SelectItem>
-                      <SelectItem value="RIGHT CLICK">Right Click</SelectItem>
-                      <SelectItem value="LEFT+RIGHT CLICK">Left+Right Click</SelectItem>
-                      <SelectItem value="DUCK LEFT RIGHT CLICK">Duck Left+Right Click</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  />
                 </div>
               </div>
             </section>

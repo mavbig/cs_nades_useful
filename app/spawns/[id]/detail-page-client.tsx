@@ -55,19 +55,19 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
 
   return (
     <main className="flex flex-col h-screen bg-background overflow-hidden">
-      <header className="shrink-0 flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center gap-3 min-w-0">
+      <header className="shrink-0 flex items-center justify-between gap-3 px-3 py-2 border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center gap-2 min-w-0">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="shrink-0 rounded-lg"
+            className="shrink-0 rounded-lg h-8 w-8"
             aria-label="Back to list"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="min-w-0">
-            <h1 className="text-base font-semibold truncate">{set.title}</h1>
+            <h1 className="text-sm font-semibold truncate">{set.title}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span
                 className={cn(
@@ -89,7 +89,7 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
           <Button
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5"
+            className="h-7 gap-1.5 text-xs"
             onClick={() => setShowEditForm(true)}
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -98,31 +98,31 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
         )}
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3 custom-scrollbar">
         {set.description && (
-          <p className="text-sm text-muted-foreground mb-4 max-w-3xl">{set.description}</p>
+          <p className="text-xs text-muted-foreground mb-3 max-w-3xl">{set.description}</p>
         )}
 
-        <div className="flex flex-col xl:flex-row gap-5 max-w-6xl">
-          <section className="xl:w-[min(420px,100%)] shrink-0 space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="flex flex-col md:flex-row gap-3 md:items-start max-w-5xl">
+          <section className="md:w-[240px] lg:w-[280px] shrink-0 space-y-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Spawn overview
             </h2>
-            <div className="rounded-xl border border-border/80 bg-card/60 overflow-hidden">
+            <div className="rounded-lg border border-border/80 bg-card/60 overflow-hidden">
               {set.overviewImagePath ? (
                 <img
                   src={getMediaUrl(set.overviewImagePath)}
                   alt="Spawn overview"
-                  className="w-full aspect-[4/3] object-contain bg-black"
+                  className="w-full max-h-[min(220px,32vh)] object-contain bg-black"
                 />
               ) : (
-                <div className="flex items-center justify-center aspect-[4/3] bg-muted/40 text-sm text-muted-foreground px-4 text-center">
+                <div className="flex items-center justify-center h-[140px] bg-muted/40 text-xs text-muted-foreground px-3 text-center">
                   No overview image yet. Upload a top-down map with numbered spawns when editing.
                 </div>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {set.positions.map((position, index) => {
                 const configured = isPositionConfigured(position);
                 const selected = index === activeIndex;
@@ -135,17 +135,17 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
                     disabled={!configured}
                     aria-pressed={selected}
                     className={cn(
-                      'rounded-lg border px-3 py-2 text-sm font-medium transition-all',
+                      'rounded-md border px-2 py-1.5 text-xs font-medium transition-all',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                       !configured && 'border-border/50 bg-muted/30 text-muted-foreground/60 cursor-not-allowed',
                       configured && !selected && 'border-border/70 bg-card/50 text-foreground hover:bg-card hover:border-border',
                       selected && configured && 'border-accent-foreground/25 bg-accent text-accent-foreground ring-2 ring-ring',
                     )}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5">
                       <span
                         className={cn(
-                          'inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold border',
+                          'inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold border',
                           configured
                             ? selected
                               ? 'border-accent-foreground/30 bg-background/80 text-accent-foreground'
@@ -163,33 +163,33 @@ export default function DetailPageClient({ set: initialSet }: { set: SpawnSmokeS
             </div>
           </section>
 
-          <section className="flex-1 min-w-0 space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <section className="flex-1 min-w-0 space-y-2">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Throw position
             </h2>
             {selectedPosition && isPositionConfigured(selectedPosition) ? (
-              <article className="rounded-xl border border-border/80 bg-card/60 overflow-hidden">
-                <div className="px-4 py-3 border-b border-border/60 flex flex-wrap items-center gap-2 justify-between">
+              <article className="rounded-lg border border-border/80 bg-card/60 overflow-hidden">
+                <div className="px-3 py-2 border-b border-border/60 flex flex-wrap items-center gap-2 justify-between">
                   <div>
                     <h3 className="text-sm font-semibold">{selectedPosition.label}</h3>
                     {selectedPosition.description && (
-                      <p className="text-xs text-muted-foreground mt-1">{selectedPosition.description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{selectedPosition.description}</p>
                     )}
                   </div>
-                  <span className="text-[10px] font-semibold px-2 py-1 rounded-md uppercase tracking-wider bg-muted text-muted-foreground">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md uppercase tracking-wider bg-muted text-muted-foreground">
                     {selectedPosition.throwType || 'STAND'}
                   </span>
                 </div>
-                <div className="aspect-[16/10] bg-black">
+                <div className="bg-black flex items-center justify-center">
                   <img
                     src={getMediaUrl(selectedPosition.screenshotPath)}
                     alt={selectedPosition.label}
-                    className="w-full h-full object-contain"
+                    className="w-full max-h-[min(420px,52vh)] object-contain"
                   />
                 </div>
               </article>
             ) : (
-              <div className="rounded-xl border border-dashed border-border/80 bg-card/30 px-4 py-10 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-dashed border-border/80 bg-card/30 px-3 py-8 text-center text-xs text-muted-foreground">
                 Select a configured spawn to see where to aim and throw.
               </div>
             )}

@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https --experimental-https-key ./certs/server.key --experimental-https-cert ./certs/server.crt",
-    "build": "npm run export-data && next build",
+    "dev": "tsx scripts/toggle-api.ts enable && next dev",
+    "build": "tsx scripts/toggle-api.ts disable && npm run export-data && next build",
     "pages:build": "next build",
     "start": "next start",
     "lint": "next lint",
     "export-data": "tsx scripts/export-lineups.ts",
-    "sync-media": "echo 'Wrangler does not support native R2 sync. Please upload data/media/ to your R2 bucket (cs-nades-useful) manually via the Cloudflare Dashboard or use rclone/aws-cli.'",
+    "sync-media": "tsx scripts/sync-media.ts",
+    "publish": "tsx scripts/publish.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

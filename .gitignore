@@ -2,8 +2,9 @@ node_modules
 .next
 dist
 out
-/data
+/data/*
 !/data/static-lineups.json
+data/.r2-sync-manifest.json
 .env
 .env.local
 .DS_Store

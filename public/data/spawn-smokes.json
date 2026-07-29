@@ -1,5 +1,58 @@
 [
   {
+    "id": "ee0b8d18-3dca-4d4b-aefd-0103af3362b5",
+    "map": "Ancient",
+    "side": "T",
+    "title": "Red Room Smoke",
+    "description": null,
+    "overviewImagePath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/overview.png",
+    "thumbnailPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/thumbnail.webp",
+    "createdAt": "2026-07-29T18:57:00.578Z",
+    "updatedAt": "2026-07-29T18:57:00.578Z",
+    "positions": [
+      {
+        "id": "152bd875-b37f-4990-857b-6e704cce2afd",
+        "label": "Spawn 1",
+        "sortOrder": 0,
+        "throwType": "W JUMPTHROW",
+        "screenshotPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/152bd875-b37f-4990-857b-6e704cce2afd/screenshot.png",
+        "description": null
+      },
+      {
+        "id": "85a57659-7115-4639-b2a1-c28790333dde",
+        "label": "Spawn 2",
+        "sortOrder": 1,
+        "throwType": "W JUMPTHROW",
+        "screenshotPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/85a57659-7115-4639-b2a1-c28790333dde/screenshot.png",
+        "description": null
+      },
+      {
+        "id": "8afb8857-6347-4164-a7d8-49d06bd76086",
+        "label": "Spawn 3",
+        "sortOrder": 2,
+        "throwType": "W JUMPTHROW",
+        "screenshotPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/8afb8857-6347-4164-a7d8-49d06bd76086/screenshot.png",
+        "description": null
+      },
+      {
+        "id": "c3b0e435-0efd-432f-b813-1bff284327bf",
+        "label": "Spawn 4",
+        "sortOrder": 3,
+        "throwType": "W JUMPTHROW",
+        "screenshotPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/c3b0e435-0efd-432f-b813-1bff284327bf/screenshot.png",
+        "description": null
+      },
+      {
+        "id": "9a21a499-284d-4115-940a-5156d439eed8",
+        "label": "Spawn 5",
+        "sortOrder": 4,
+        "throwType": "W JUMPTHROW",
+        "screenshotPath": "media/spawn-smokes/ee0b8d18-3dca-4d4b-aefd-0103af3362b5/9a21a499-284d-4115-940a-5156d439eed8/screenshot.png",
+        "description": null
+      }
+    ]
+  },
+  {
     "id": "52846657-de43-4ff3-846e-7ac3a40aa41d",
     "map": "Mirage",
     "side": "T",

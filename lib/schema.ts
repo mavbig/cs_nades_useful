@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { THROW_TYPES } from "./throw-types";
 
 export const LineupSchema = z.object({
   map: z.string().min(1, "Map is required"),
@@ -8,7 +9,7 @@ export const LineupSchema = z.object({
   description: z.string().optional(),
   tags: z.string(),
   startSpot: z.string().min(1, "Start spot is required"),
-  throwType: z.enum(["STAND", "WALK", "RUN", "JUMPTHROW", "A JUMPTHROW", "D JUMPTHROW", "RUN JUMPTHROW", "WALK JUMPTHROW", "RIGHT CLICK", "LEFT+RIGHT CLICK"]),
+  throwType: z.enum(THROW_TYPES),
   tickrate: z.enum(["TR64", "TR128", "ANY"]),
 });
 

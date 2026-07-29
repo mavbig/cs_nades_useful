@@ -55,6 +55,16 @@ export function KeyboardManager() {
         }
       }
 
+      if (pathname.startsWith('/spawns/')) {
+        if (e.key === 'Escape') {
+          window.dispatchEvent(new CustomEvent('app:close-form'));
+        }
+        if (e.key === 'p' || e.key === 'Escape' || e.key === 'g') {
+          e.preventDefault();
+          router.back();
+        }
+      }
+
       // Detail page specific (p, g, Escape, Delete)
       if (pathname.startsWith('/lineups/')) {
         if (e.key === 's' || e.key === 'S') {

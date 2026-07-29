@@ -1,7 +1,8 @@
 'use client';
 import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
-import { Lineup, MapCount } from '@/lib/types';
+import { Lineup, MapCount, SpawnSmokeSet } from '@/lib/types';
 import { LineupCard } from '@/components/lineup-card';
+import { SpawnSmokeSetCard } from '@/components/spawn-smoke-set-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ArrowLeft, Map as MapIcon, Plus, LayoutGrid, Cloud, Zap, Flame, Bomb, CircleDashed } from 'lucide-react';
@@ -9,8 +10,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { MAPS } from '@/lib/maps';
 import { cn, normalizeMapName } from '@/lib/utils';
 import { getMapCounts, getLineupsByMap } from '@/lib/data';
+import { getSpawnSmokeSetsByMap } from '@/lib/spawn-smoke-data';
 import { getMapImageUrl } from '@/lib/media';
 import { LineupForm } from '@/components/lineup-form';
+import { SpawnSmokeSetForm } from '@/components/spawn-smoke-set-form';
+
+type ContentView = 'lineups' | 'spawn-smokes';
 
 const UTILITIES = [
   { id: 'ALL', label: 'All', icon: LayoutGrid, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', activeBg: 'bg-blue-500', activeText: 'text-white' },
@@ -28,10 +33,14 @@ function HomePageInner() {
   const [mapCounts, setMapCounts] = useState<MapCount[]>([]);
   const [mapsLoading, setMapsLoading] = useState(true);
   const [lineups, setLineups] = useState<Lineup[]>([]);
+  const [spawnSmokeSets, setSpawnSmokeSets] = useState<SpawnSmokeSet[]>([]);
   const [lineupsLoading, setLineupsLoading] = useState(false);
+  const [spawnSmokesLoading, setSpawnSmokesLoading] = useState(false);
+  const [contentView, setContentView] = useState<ContentView>('lineups');
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showForm, setShowForm] = useState(false);
+  const [showLineupForm, setShowLineupForm] = useState(false);
+  const [showSpawnForm, setShowSpawnForm] = useState(false);
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -43,12 +52,15 @@ function HomePageInner() {
     if (!mapParam) {
       setSelectedMap(null);
       setSelectedUtility('ALL');
+      setContentView('lineups');
       return;
     }
     setSelectedMap(mapParam);
+    const viewParam = searchParams.get('view');
+    setContentView(viewParam === 'spawn-smokes' ? 'spawn-smokes' : 'lineups');
   }, [searchParams]);
 
-  const refreshData = async () => {
+  const refreshMapData = async () => {
     if (isDynamic) {
       setMapsLoading(true);
       const res = await fetch('/api/lineups/maps');
@@ -64,8 +76,29 @@ function HomePageInner() {
   };
 
   useEffect(() => {
-    refreshData();
+    refreshMapData();
   }, [isDynamic]);
+
+  useEffect(() => {
+    if (!selectedMap) {
+      setSpawnSmokeSets([]);
+      return;
+    }
+    setSpawnSmokesLoading(true);
+    if (isDynamic) {
+      fetch(`/api/spawn-smokes?map=${encodeURIComponent(selectedMap)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setSpawnSmokeSets(data);
+          setSpawnSmokesLoading(false);
+        });
+    } else {
+      getSpawnSmokeSetsByMap(selectedMap).then((data) => {
+        setSpawnSmokeSets(data);
+        setSpawnSmokesLoading(false);
+      });
+    }
+  }, [selectedMap, isDynamic]);
 
   useEffect(() => {
     if (!selectedMap) {
@@ -113,21 +146,60 @@ function HomePageInner() {
     );
   }, [search, lineups, selectedUtility]);
 
+  const filteredSpawnSmokes = useMemo(() => {
+    if (!search.trim()) return spawnSmokeSets;
+
+    const query = search.toLowerCase();
+    return spawnSmokeSets.filter(
+      (set) =>
+        set.title.toLowerCase().includes(query) ||
+        set.description?.toLowerCase().includes(query) ||
+        set.positions.some((position) => position.label.toLowerCase().includes(query)),
+    );
+  }, [search, spawnSmokeSets]);
+
   const tLineups = useMemo(() => filtered.filter(l => l.side === 'T' || l.side === 'ANY'), [filtered]);
   const ctLineups = useMemo(() => filtered.filter(l => l.side === 'CT' || l.side === 'ANY'), [filtered]);
+  const tSpawnSmokes = useMemo(() => filteredSpawnSmokes.filter((set) => set.side === 'T'), [filteredSpawnSmokes]);
+  const ctSpawnSmokes = useMemo(() => filteredSpawnSmokes.filter((set) => set.side === 'CT'), [filteredSpawnSmokes]);
+
+  const activeItems = contentView === 'lineups' ? filtered : filteredSpawnSmokes;
+  const isLoading = contentView === 'lineups' ? lineupsLoading : spawnSmokesLoading;
+
+  const updateMapView = (view: ContentView) => {
+    setContentView(view);
+    setSelectedIndex(0);
+    if (!selectedMap) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('map', selectedMap);
+    if (view === 'spawn-smokes') {
+      params.set('view', 'spawn-smokes');
+    } else {
+      params.delete('view');
+    }
+    const qs = params.toString();
+    router.push(qs ? `/?${qs}` : '/');
+  };
 
   useEffect(() => {
-    const handleNext = () => setSelectedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+    const handleNext = () => setSelectedIndex((prev) => Math.min(prev + 1, activeItems.length - 1));
     const handlePrev = () => setSelectedIndex((prev) => Math.max(prev - 1, 0));
     const handleSelect = () => {
-      if (filtered[selectedIndex]) {
-        const currentMap = selectedMap ?? filtered[selectedIndex].map;
-        router.push(`/lineups/${filtered[selectedIndex].id}?map=${encodeURIComponent(currentMap)}`);
+      if (!activeItems[selectedIndex] || !selectedMap) return;
+
+      if (contentView === 'lineups') {
+        const lineup = activeItems[selectedIndex] as Lineup;
+        router.push(`/lineups/${lineup.id}?map=${encodeURIComponent(selectedMap)}`);
+        return;
       }
+
+      const set = activeItems[selectedIndex] as SpawnSmokeSet;
+      router.push(`/spawns/${set.id}?map=${encodeURIComponent(selectedMap)}`);
     };
     const handleGoToMapSelection = () => {
       setSelectedMap(null);
       setSelectedUtility('ALL');
+      setContentView('lineups');
       setSearch('');
       const params = new URLSearchParams(searchParams.toString());
       params.delete('map');
@@ -136,6 +208,7 @@ function HomePageInner() {
     };
 
     const handleUtilityHotkey = (e: CustomEvent) => {
+      if (contentView !== 'lineups') return;
       const { key } = e.detail;
       const index = parseInt(key) - 1;
       if (index >= 0 && index < UTILITIES.length) {
@@ -157,11 +230,11 @@ function HomePageInner() {
       // @ts-ignore
       window.removeEventListener('app:utility-hotkey', handleUtilityHotkey);
     };
-  }, [filtered, selectedIndex, router, searchParams, selectedMap]);
+  }, [activeItems, selectedIndex, router, searchParams, selectedMap, contentView]);
 
   useEffect(() => {
     setSelectedIndex(0);
-  }, [search, selectedUtility]);
+  }, [search, selectedUtility, contentView]);
 
   return (
     <main className="flex flex-col h-screen max-w-[1200px] mx-auto bg-background">
@@ -175,7 +248,7 @@ function HomePageInner() {
                   <Button
                     size="sm"
                     className="h-7 rounded-md px-2 text-xs gap-1"
-                    onClick={() => setShowForm(true)}
+                    onClick={() => setShowLineupForm(true)}
                   >
                     <Plus className="w-3 h-3" /> Add Lineup
                   </Button>
@@ -272,11 +345,38 @@ function HomePageInner() {
                 <Button
                   size="sm"
                   className="h-8 rounded-md px-3 text-xs gap-1.5"
-                  onClick={() => setShowForm(true)}
+                  onClick={() => (contentView === 'lineups' ? setShowLineupForm(true) : setShowSpawnForm(true))}
                 >
-                  <Plus className="w-4 h-4" /> Add Lineup
+                  <Plus className="w-4 h-4" />
+                  {contentView === 'lineups' ? 'Add Lineup' : 'Add Spawn Smokes'}
                 </Button>
               )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => updateMapView('lineups')}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
+                  contentView === 'lineups'
+                    ? 'bg-primary text-primary-foreground border-transparent'
+                    : 'bg-card text-muted-foreground border-border/60 hover:border-border',
+                )}
+              >
+                Lineups
+              </button>
+              <button
+                type="button"
+                onClick={() => updateMapView('spawn-smokes')}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
+                  contentView === 'spawn-smokes'
+                    ? 'bg-primary text-primary-foreground border-transparent'
+                    : 'bg-card text-muted-foreground border-border/60 hover:border-border',
+                )}
+              >
+                Spawn Smokes
+              </button>
             </div>
             <div className="space-y-3">
               <div className="relative">
@@ -284,14 +384,15 @@ function HomePageInner() {
                 <Input
                   id="search-input"
                   ref={searchRef}
-                  placeholder="Search lineups... (/)"
+                  placeholder={contentView === 'lineups' ? 'Search lineups... (/)' : 'Search spawn smokes... (/)'}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-10 bg-background/80 border-border/80 focus-visible:ring-2"
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1">
+              {contentView === 'lineups' && (
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1">
                 {UTILITIES.map((u) => {
                   const Icon = u.icon;
                   const isActive = selectedUtility === u.id;
@@ -311,33 +412,38 @@ function HomePageInner() {
                     </button>
                   );
                 })}
-              </div>
+                </div>
+              )}
             </div>
           </header>
 
           <div className="flex-1 overflow-y-auto px-4 py-3 custom-scrollbar">
-            {lineupsLoading ? (
+            {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <div className="h-8 w-8 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin mb-3" />
-                <span className="text-sm">Loading lineups...</span>
+                <span className="text-sm">
+                  {contentView === 'lineups' ? 'Loading lineups...' : 'Loading spawn smokes...'}
+                </span>
               </div>
-            ) : filtered.length === 0 ? (
+            ) : activeItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <p className="text-muted-foreground text-sm">
-                  {search ? 'No lineups match your search.' : `No lineups for ${selectedMap} yet.`}
+                  {search
+                    ? `No ${contentView === 'lineups' ? 'lineups' : 'spawn smoke sets'} match your search.`
+                    : `No ${contentView === 'lineups' ? 'lineups' : 'spawn smoke sets'} for ${selectedMap} yet.`}
                 </p>
                 {isDynamic && (
                   <Button
                     variant="link"
                     className="mt-2 text-primary text-xs"
-                    onClick={() => setShowForm(true)}
+                    onClick={() => (contentView === 'lineups' ? setShowLineupForm(true) : setShowSpawnForm(true))}
                   >
-                    Add the first lineup
+                    {contentView === 'lineups' ? 'Add the first lineup' : 'Add the first spawn smoke set'}
                   </Button>
                 )}
                 <p className="text-muted-foreground/80 text-xs mt-1">Try another map selection.</p>
               </div>
-            ) : (
+            ) : contentView === 'lineups' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <section>
                   <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 mb-3 px-1">
@@ -346,7 +452,7 @@ function HomePageInner() {
                   </h2>
                   <ul className="space-y-2" role="list">
                     {tLineups.map((lineup) => {
-                      const globalIndex = filtered.findIndex(l => l.id === lineup.id);
+                      const globalIndex = filtered.findIndex((entry) => entry.id === lineup.id);
                       return (
                         <li key={`t-${lineup.id}`}>
                           <LineupCard lineup={lineup} selected={globalIndex === selectedIndex} />
@@ -362,10 +468,45 @@ function HomePageInner() {
                   </h2>
                   <ul className="space-y-2" role="list">
                     {ctLineups.map((lineup) => {
-                      const globalIndex = filtered.findIndex(l => l.id === lineup.id);
+                      const globalIndex = filtered.findIndex((entry) => entry.id === lineup.id);
                       return (
                         <li key={`ct-${lineup.id}`}>
                           <LineupCard lineup={lineup} selected={globalIndex === selectedIndex} />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <section>
+                  <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 mb-3 px-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    T Side
+                  </h2>
+                  <ul className="space-y-2" role="list">
+                    {tSpawnSmokes.map((set) => {
+                      const globalIndex = filteredSpawnSmokes.findIndex((entry) => entry.id === set.id);
+                      return (
+                        <li key={`t-spawn-${set.id}`}>
+                          <SpawnSmokeSetCard set={set} selected={globalIndex === selectedIndex} />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+                <section>
+                  <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-blue-400 mb-3 px-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-400" />
+                    CT Side
+                  </h2>
+                  <ul className="space-y-2" role="list">
+                    {ctSpawnSmokes.map((set) => {
+                      const globalIndex = filteredSpawnSmokes.findIndex((entry) => entry.id === set.id);
+                      return (
+                        <li key={`ct-spawn-${set.id}`}>
+                          <SpawnSmokeSetCard set={set} selected={globalIndex === selectedIndex} />
                         </li>
                       );
                     })}
@@ -376,12 +517,40 @@ function HomePageInner() {
           </div>
         </>
       )}
-      {showForm && (
+      {showLineupForm && (
         <LineupForm
           initialMap={selectedMap || undefined}
           onClose={(newLineup) => {
-            setShowForm(false);
-            if (newLineup) refreshData();
+            setShowLineupForm(false);
+            if (newLineup && selectedMap) {
+              if (isDynamic) {
+                fetch(`/api/lineups?map=${encodeURIComponent(selectedMap)}`)
+                  .then((res) => res.json())
+                  .then(setLineups)
+                  .catch(() => undefined);
+              } else {
+                getLineupsByMap(selectedMap).then(setLineups);
+              }
+              refreshMapData();
+            }
+          }}
+        />
+      )}
+      {showSpawnForm && (
+        <SpawnSmokeSetForm
+          initialMap={selectedMap || undefined}
+          onClose={(updatedSet) => {
+            setShowSpawnForm(false);
+            if (updatedSet && selectedMap) {
+              if (isDynamic) {
+                fetch(`/api/spawn-smokes?map=${encodeURIComponent(selectedMap)}`)
+                  .then((res) => res.json())
+                  .then(setSpawnSmokeSets)
+                  .catch(() => undefined);
+              } else {
+                getSpawnSmokeSetsByMap(selectedMap).then(setSpawnSmokeSets);
+              }
+            }
           }}
         />
       )}

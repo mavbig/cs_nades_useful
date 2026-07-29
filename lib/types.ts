@@ -19,3 +19,22 @@ export type MapCount = {
   map: string;
   count: number;
 };
+
+export interface SpawnSmokePosition {
+  id: string;
+  label: string;
+  sortOrder: number;
+  screenshotPath: string;
+  description: string | null;
+}
+
+export interface SpawnSmokeSet {
+  id: string;
+  map: string;
+  side: string;
+  title: string;
+  description: string | null;
+  positions: SpawnSmokePosition[];
+  createdAt: string;
+  updatedAt: string;
+}

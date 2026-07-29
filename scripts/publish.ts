@@ -4,7 +4,9 @@ import path from 'path';
 
 const TRACKED_EXPORT_FILES = [
   'data/static-lineups.json',
+  'data/static-spawn-smokes.json',
   'public/data/lineups.json',
+  'public/data/spawn-smokes.json',
 ];
 
 const TSX_CLI = path.join(process.cwd(), 'node_modules', 'tsx', 'dist', 'cli.mjs');

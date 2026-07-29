@@ -4,6 +4,7 @@ dist
 out
 /data/*
 !/data/static-lineups.json
+!/data/static-spawn-smokes.json
 data/.r2-sync-manifest.json
 .env
 .env.local

@@ -4,6 +4,12 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
+async function writeJson(relativePath: string, data: unknown) {
+  const filePath = path.join(process.cwd(), relativePath);
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+}
+
 async function main() {
   console.log('Exporting lineups to JSON...');
 
@@ -11,29 +17,54 @@ async function main() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const exportData = lineups.map((l) => ({
-    ...l,
-    createdAt: l.createdAt.toISOString(),
-    updatedAt: l.updatedAt.toISOString(),
+  const exportLineups = lineups.map((lineup) => ({
+    ...lineup,
+    createdAt: lineup.createdAt.toISOString(),
+    updatedAt: lineup.updatedAt.toISOString(),
   }));
 
-  const publicDataDir = path.join(process.cwd(), 'public', 'data');
-  await fs.mkdir(publicDataDir, { recursive: true });
-
-  const filePath = path.join(publicDataDir, 'lineups.json');
-  await fs.writeFile(filePath, JSON.stringify(exportData, null, 2), 'utf-8');
-
-  // Also export to data/ for direct import in lib/data.ts
-  const internalDataDir = path.join(process.cwd(), 'data');
-  await fs.mkdir(internalDataDir, { recursive: true });
-  await fs.writeFile(path.join(internalDataDir, 'static-lineups.json'), JSON.stringify(exportData, null, 2), 'utf-8');
+  await writeJson('public/data/lineups.json', exportLineups);
+  await writeJson('data/static-lineups.json', exportLineups);
 
   console.log(`Successfully exported ${lineups.length} lineups.`);
+
+  console.log('Exporting spawn smoke sets to JSON...');
+
+  const spawnSmokeSets = await prisma.spawnSmokeSet.findMany({
+    include: {
+      positions: {
+        orderBy: { sortOrder: 'asc' },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const exportSpawnSmokes = spawnSmokeSets.map((set) => ({
+    id: set.id,
+    map: set.map,
+    side: set.side,
+    title: set.title,
+    description: set.description,
+    createdAt: set.createdAt.toISOString(),
+    updatedAt: set.updatedAt.toISOString(),
+    positions: set.positions.map((position) => ({
+      id: position.id,
+      label: position.label,
+      sortOrder: position.sortOrder,
+      screenshotPath: position.screenshotPath,
+      description: position.description,
+    })),
+  }));
+
+  await writeJson('public/data/spawn-smokes.json', exportSpawnSmokes);
+  await writeJson('data/static-spawn-smokes.json', exportSpawnSmokes);
+
+  console.log(`Successfully exported ${spawnSmokeSets.length} spawn smoke sets.`);
 }
 
 main()
-  .catch((e) => {
-    console.error('Export failed:', e);
+  .catch((error) => {
+    console.error('Export failed:', error);
     process.exit(1);
   })
   .finally(async () => {

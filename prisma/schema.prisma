@@ -25,3 +25,28 @@ model Lineup {
 
   @@index([map])
 }
+
+model SpawnSmokeSet {
+  id          String               @id @default(uuid())
+  map         String
+  side        String               // "T" or "CT"
+  title       String
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  positions   SpawnSmokePosition[]
+
+  @@index([map])
+}
+
+model SpawnSmokePosition {
+  id             String        @id @default(uuid())
+  setId          String
+  set            SpawnSmokeSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  label          String
+  sortOrder      Int
+  screenshotPath String
+  description    String?
+
+  @@index([setId])
+}

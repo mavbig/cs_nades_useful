@@ -1,5 +1,21 @@
 [
   {
+    "id": "06f5f014-c0e2-4793-ac50-ee1cff3245d1",
+    "map": "Dust2",
+    "side": "T",
+    "utility": "SMOKE",
+    "title": "Mid to B Smoke",
+    "description": "",
+    "tags": "midround",
+    "startSpot": "Mid X Box",
+    "throwType": "DUCK LEFT RIGHT CLICK",
+    "tickrate": "ANY",
+    "screenshotPath": "media/06f5f014-c0e2-4793-ac50-ee1cff3245d1/screenshot.png",
+    "clipPath": "media/06f5f014-c0e2-4793-ac50-ee1cff3245d1/clip.mkv",
+    "createdAt": "2026-07-29T11:39:57.965Z",
+    "updatedAt": "2026-07-29T11:39:57.965Z"
+  },
+  {
     "id": "ef421d13-d7e4-4f07-b8aa-954fd534d5fd",
     "map": "Inferno",
     "side": "T",

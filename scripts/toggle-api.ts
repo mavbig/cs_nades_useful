@@ -16,14 +16,28 @@ async function exists(filePath: string): Promise<boolean> {
   }
 }
 
+async function removeDir(dirPath: string): Promise<void> {
+  await fs.rm(dirPath, { recursive: true, force: true });
+}
+
 async function toggle(mode: Mode): Promise<void> {
+  const apiExists = await exists(API_DIR);
+  const disabledExists = await exists(DISABLED_API_DIR);
+
   if (mode === 'enable') {
-    if (await exists(API_DIR)) {
+    if (apiExists && !disabledExists) {
       console.log('API routes already enabled (app/api exists).');
       return;
     }
 
-    if (!(await exists(DISABLED_API_DIR))) {
+    if (apiExists && disabledExists) {
+      // Prefer the active api folder; drop the stale disabled copy.
+      await removeDir(DISABLED_API_DIR);
+      console.log('API routes already enabled; removed leftover app/_api.');
+      return;
+    }
+
+    if (!disabledExists) {
       throw new Error('Cannot enable API routes: app/_api was not found.');
     }
 
@@ -32,12 +46,21 @@ async function toggle(mode: Mode): Promise<void> {
     return;
   }
 
-  if (await exists(DISABLED_API_DIR)) {
+  // disable
+  if (!apiExists && disabledExists) {
     console.log('API routes already disabled (app/_api exists).');
     return;
   }
 
-  if (!(await exists(API_DIR))) {
+  if (apiExists && disabledExists) {
+    // Keep the active api contents as the disabled source of truth.
+    await removeDir(DISABLED_API_DIR);
+    await fs.rename(API_DIR, DISABLED_API_DIR);
+    console.log('Disabled API routes: replaced app/_api with app/api (both existed).');
+    return;
+  }
+
+  if (!apiExists) {
     throw new Error('Cannot disable API routes: app/api was not found.');
   }
 

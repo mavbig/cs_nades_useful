@@ -8,13 +8,13 @@
     "overviewImagePath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/overview.png",
     "thumbnailPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/thumbnail.webp",
     "createdAt": "2026-07-29T13:15:11.865Z",
-    "updatedAt": "2026-07-29T14:08:09.107Z",
+    "updatedAt": "2026-07-29T15:28:59.554Z",
     "positions": [
       {
         "id": "8d8fbc84-4dff-4e52-99c7-0e823b8d1330",
         "label": "Spawn 1",
         "sortOrder": 0,
-        "throwType": "STAND",
+        "throwType": "W JUMPTHROW",
         "screenshotPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/8d8fbc84-4dff-4e52-99c7-0e823b8d1330/screenshot.png",
         "description": null
       },
@@ -22,7 +22,7 @@
         "id": "2ed29090-871f-4966-b604-9fcc06f8b274",
         "label": "Spawn 2",
         "sortOrder": 1,
-        "throwType": "STAND",
+        "throwType": "W JUMPTHROW",
         "screenshotPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/ddb8297c-34e8-4320-890b-8faee67e611f/screenshot.png",
         "description": null
       },
@@ -30,7 +30,7 @@
         "id": "ae4d2f74-261a-489d-ad40-4513959de3b4",
         "label": "Spawn 3",
         "sortOrder": 2,
-        "throwType": "STAND",
+        "throwType": "W JUMPTHROW",
         "screenshotPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/23caf935-46d8-4abd-b734-ef52bcb65ad7/screenshot.png",
         "description": null
       },
@@ -38,7 +38,7 @@
         "id": "07fce29f-2b1e-400d-b8f2-7fcdfe6c589c",
         "label": "Spawn 4",
         "sortOrder": 3,
-        "throwType": "STAND",
+        "throwType": "W JUMPTHROW",
         "screenshotPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/26791bd8-71a0-4034-9b40-75b0f7ac9d38/screenshot.png",
         "description": null
       },
@@ -46,7 +46,7 @@
         "id": "bf827a98-b933-4650-bc04-df904d0acc1d",
         "label": "Spawn 5",
         "sortOrder": 4,
-        "throwType": "STAND",
+        "throwType": "W JUMPTHROW",
         "screenshotPath": "media/spawn-smokes/52846657-de43-4ff3-846e-7ac3a40aa41d/cd184c7e-1b56-4988-a1ad-9748bc19aaa2/screenshot.png",
         "description": null
       }
